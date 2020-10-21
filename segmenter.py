@@ -50,7 +50,7 @@ class Segmenter:
 
         return segments
 
-    def find_headers(self, SegmentsToExtract : FindType):
+    def find_segs_with_type(self, SegmentsToExtract : FindType):
         # self.__findFontSizes()
         self.font_statistics()
 
@@ -60,12 +60,12 @@ class Segmenter:
         for text_block in text_blocks:
             text_lines = text_block.getElementsByTagName('TextLine')
 
-            if SegmentsToExtract == 1:
+            if SegmentsToExtract == FindType.Header:
                 if text_lines[0].attributes['STYLEREFS'].value in self.__para_fonts:
                     coordinate = self.__extract_coordinates(text_block)
                     if coordinate is not None:
                         segments.append(coordinate)
-            elif SegmentsToExtract == 2:
+            elif SegmentsToExtract == FindType.Paragraph:
                 if text_lines[0].attributes['STYLEREFS'].value not in self.__para_fonts:
                     coordinate = self.__extract_coordinates(text_block)
                     if coordinate is not None:

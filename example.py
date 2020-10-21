@@ -17,8 +17,8 @@ if __name__ == '__main__':
     segmenter.set_dpi(300)
     segmenter.set_margin(0)
     segments_paragraphs = segmenter.find_blocks()
-    segments_headers = segmenter.find_headers(1)
-    segments_para = segmenter.find_headers(2)
+    segments_headers = segmenter.find_segs_with_type(FindType.Header)
+    segments_para = segmenter.find_segs_with_type(FindType.Paragraph)
     segmenter.font_statistics()
     #segments = segmenter.find_lines()
 
