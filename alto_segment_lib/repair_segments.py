@@ -22,4 +22,5 @@ class RepairSegments:
         print("Avg. paragraph width: "+(str(self.__avg_paragraph_width)))
 
     def repair_columns(self):
+        print("")
 
