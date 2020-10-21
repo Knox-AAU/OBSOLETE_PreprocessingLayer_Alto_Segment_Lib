@@ -1,5 +1,11 @@
 from xml.dom import minidom
 import operator
+import enum
+
+
+class FindType(enum.Enum):
+    Paragraph = 1
+    Header = 2
 
 
 class Segmenter:
@@ -44,7 +50,7 @@ class Segmenter:
 
         return segments
 
-    def find_headers(self):
+    def find_headers(self, SegmentsToExtract : FindType):
         # self.__findFontSizes()
         self.font_statistics()
 
@@ -53,12 +59,17 @@ class Segmenter:
 
         for text_block in text_blocks:
             text_lines = text_block.getElementsByTagName('TextLine')
-            for line in text_lines:
-                if line.attributes['STYLEREFS'].value in self.__para_fonts:
-                    coordinate = self.__extract_coordinates(line)
+
+            if SegmentsToExtract == 1:
+                if text_lines[0].attributes['STYLEREFS'].value in self.__para_fonts:
+                    coordinate = self.__extract_coordinates(text_block)
                     if coordinate is not None:
                         segments.append(coordinate)
-
+            elif SegmentsToExtract == 2:
+                if text_lines[0].attributes['STYLEREFS'].value not in self.__para_fonts:
+                    coordinate = self.__extract_coordinates(text_block)
+                    if coordinate is not None:
+                        segments.append(coordinate)
         return segments
 
     def __extract_coordinates(self, element: minidom):
