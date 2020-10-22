@@ -6,12 +6,6 @@ from matplotlib.patches import Rectangle
 from PIL import Image
 
 
-def find_pairs(segments):
-    for segment1, segment2 in segments:
-        segment1
-        #if segment1 ???? segment2:
-
-
 if __name__ == '__main__':
     #segmenter = Segmenter("/Users/tlorentzen/Desktop/Example/2006/nordjyskestiftstidende-2006-10-10-01-0829A.alto.xml")
     segmenter = Segmenter("//Users/tlorentzen/Desktop/Example/1942/aalborgstiftstidende-1942-01-02-01-0028B.alto.xml")
@@ -21,6 +15,11 @@ if __name__ == '__main__':
     #segments_paragraphs = segmenter.find_blocks()
     segments_headers = segmenter.find_segs_with_type(FindType.Header)
     segments_para = segmenter.find_segs_with_type(FindType.Paragraph)
+
+    repair = RepairSegments(segments_para)
+    repair.repair_columns()
+
+
     #segmenter.font_statistics()
     #segments = segmenter.find_lines()
 
