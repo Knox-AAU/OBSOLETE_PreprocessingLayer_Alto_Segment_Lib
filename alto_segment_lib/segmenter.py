@@ -2,11 +2,9 @@ from xml.dom import minidom
 import operator
 import enum
 
-
 class FindType(enum.Enum):
     Paragraph = 1
     Header = 2
-
 
 class Segmenter:
     __path: str
@@ -38,15 +36,14 @@ class Segmenter:
 
         return segments
 
-    def find_lines(self):
+    def find_lines_in_segment(self, elem: minidom):
         segments: list = []
-        text_blocks = self.__xmldoc.getElementsByTagName('TextBlock')
 
-        for text_block in text_blocks:
-            text_lines = text_block.getElementsByTagName('TextLine')
-            for line in text_lines:
-                coordinate = self.__extract_coordinates(line)
-                segments.append(coordinate)
+        text_lines = elem.getElementsByTagName('TextLine')
+
+        for text_line in text_lines:
+            coordinate = self.__extract_coordinates(text_line)
+            segments.append(coordinate)
 
         return segments
 
@@ -55,30 +52,35 @@ class Segmenter:
         self.font_statistics()
 
         segments: list = []
+        lines :list = []
+
         text_blocks = self.__xmldoc.getElementsByTagName('TextBlock')
 
         for text_block in text_blocks:
             text_lines = text_block.getElementsByTagName('TextLine')
+            text_lines_coord = self.find_lines_in_segment(text_block)
+            coordinate = None
 
             if SegmentsToExtract == FindType.Header:
                 if text_lines[0].attributes['STYLEREFS'].value in self.__para_fonts:
                     coordinate = self.__extract_coordinates(text_block)
-                    if coordinate is not None:
-                        segments.append(coordinate)
             elif SegmentsToExtract == FindType.Paragraph:
                 if text_lines[0].attributes['STYLEREFS'].value not in self.__para_fonts:
                     coordinate = self.__extract_coordinates(text_block)
-                    if coordinate is not None:
-                        segments.append(coordinate)
+
+            if coordinate is not None:
+                coordinate.append(text_lines_coord)
+                segments.append(coordinate)
+
         return segments
+
 
     def __extract_coordinates(self, element: minidom):
         coordinates = [
             int(element.attributes['HPOS'].value),
             int(element.attributes['VPOS'].value),
             int(element.attributes['WIDTH'].value)+int(element.attributes['HPOS'].value),
-            int(element.attributes['HEIGHT'].value)+int(element.attributes['VPOS'].value),
-            str(element.attributes['ID'].value)
+            int(element.attributes['HEIGHT'].value)+int(element.attributes['VPOS'].value)
         ]
 
         for idx in range(4):
@@ -92,8 +94,9 @@ class Segmenter:
             coordinates[2] += self.__margin
             coordinates[3] += self.__margin
 
-        if int(self.__inch1200_to_px(int(element.attributes['WIDTH'].value))) <= 50:
-            return None
+        #Fix der fjerner små boxe. slet hvis anden reperation kommer op at køre
+        #if int(self.__inch1200_to_px(int(element.attributes['WIDTH'].value))) <= 50:
+            #return None
 
         return coordinates
 
@@ -132,12 +135,12 @@ class Segmenter:
 
         most_used_font = max(stats.items(), key=operator.itemgetter(1))[0]
 
-        print("Most used fontsize: "+str(most_used_font))
+        #print("Most used fontsize: "+str(most_used_font))
 
         for key in fonts:
             if fonts.get(key) <= fonts.get(most_used_font)+1:
-                print("Paragraph: "+key)
+                #print("Paragraph: "+key)
                 self.__para_fonts.append(key)
             else:
-                print("Header: " + key)
+                #print("Header: " + key)
                 self.__head_fonts.append(key)
