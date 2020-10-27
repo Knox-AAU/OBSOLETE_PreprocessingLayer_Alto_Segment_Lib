@@ -6,7 +6,7 @@ from matplotlib.patches import Rectangle
 from PIL import Image
 
 #filepath = "/home/tlorentzen/Desktop/Example/1942/aalborgstiftstidende-1942-01-02-01-0028B"
-filepath = "/home/tlorentzen/Desktop/Example/2006/nordjyskestiftstidende-2006-10-10-01-0829A"
+filepath = "/Users/tlorentzen/Desktop/Example/2006/nordjyskestiftstidende-2006-10-10-01-0829A"
 
 if __name__ == '__main__':
     segmenter = Segmenter(filepath + ".alto.xml")
@@ -26,7 +26,7 @@ if __name__ == '__main__':
     #segments = segmenter.find_lines()
 
     #plt.imshow(Image.open("/home/tlorentzen/Desktop/Example/1942/aalborgstiftstidende-1942-01-02-01-0028B.tiff"))
-    plt.imshow(Image.open(filepath+".tiff"))
+    plt.imshow(Image.open(filepath+".jp2"))
     plt.rcParams.update({'font.size': 3, 'text.color': "red", 'axes.labelcolor': "red"})
 
     counter = 1
@@ -40,6 +40,5 @@ if __name__ == '__main__':
         plt.text(seg[0]+25, seg[1]+30, "["+str(counter)+"]", horizontalalignment='left', verticalalignment='top')
         # plt.text(seg[0]+45, seg[1] + 200, str((seg[2]-seg[0])), horizontalalignment='left', verticalalignment='top')
         counter += 1
-
 
     plt.savefig(filepath+"-out.png",dpi=300, bbox_inches='tight')

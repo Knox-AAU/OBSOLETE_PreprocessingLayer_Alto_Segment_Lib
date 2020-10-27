@@ -36,6 +36,19 @@ class Segmenter:
 
         return segments
 
+    def find_lines(self):
+        segments: list = []
+        text_blocks = self.__xmldoc.getElementsByTagName('TextBlock')
+
+        for text_block in text_blocks:
+            text_lines = text_block.getElementsByTagName('TextLine')
+
+            for text_line in text_lines:
+                coord = self.__extract_coordinates(text_line)
+                segments.append(coord)
+
+        return segments
+
     def find_lines_in_segment(self, elem: minidom):
         segments: list = []
 
