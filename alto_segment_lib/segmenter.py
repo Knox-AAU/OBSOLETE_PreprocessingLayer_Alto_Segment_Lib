@@ -1,6 +1,8 @@
 from xml.dom import minidom
 import operator
 import enum
+from alto_segment_lib.segment import Segment
+from alto_segment_lib.segment import Line
 
 class FindType(enum.Enum):
     Paragraph = 1
@@ -19,6 +21,7 @@ class Segmenter:
         self.__dpi = dpi
         self.__margin = margin
         self.__xmldoc = minidom.parse(self.__path)
+        self.font_statistics()
 
     def set_dpi(self, dpi: int):
         self.__dpi = dpi
@@ -26,28 +29,21 @@ class Segmenter:
     def set_margin(self, margin: int):
         self.__margin = margin
 
-    def find_blocks(self):
+    def __find_segments_by_tag_name(self, tagname: str):
         segments: list = []
-        text_blocks = self.__xmldoc.getElementsByTagName('TextBlock')
+        elements = self.__xmldoc.getElementsByTagName(tagname)
 
-        for text_block in text_blocks:
-            coordinate = self.__extract_coordinates(text_block)
-            segments.append(coordinate)
+        for element in elements:
+            coordinate = self.__extract_coordinates(element)
+            segments.append(self.make_segment_by_coordinates(coordinate))
 
         return segments
 
-    def find_lines(self):
-        segments: list = []
-        text_blocks = self.__xmldoc.getElementsByTagName('TextBlock')
+    def find_blocks_coordinates(self):
+        return self.__find_segments_by_tag_name('TextBlock')
 
-        for text_block in text_blocks:
-            text_lines = text_block.getElementsByTagName('TextLine')
-
-            for text_line in text_lines:
-                coord = self.__extract_coordinates(text_line)
-                segments.append(coord)
-
-        return segments
+    def find_lines_coordinates(self):
+        return self.__find_segments_by_tag_name('TextLine')
 
     def find_lines_in_segment(self, elem: minidom):
         segments: list = []
@@ -60,10 +56,13 @@ class Segmenter:
 
         return segments
 
-    def find_segs_with_type(self, SegmentsToExtract : FindType):
-        # self.__findFontSizes()
-        self.font_statistics()
+    def find_headlines(self):
+        return self.__find_segs_with_type(FindType.Header)
 
+    def find_paragraphs(self):
+        return self.__find_segs_with_type(FindType.Paragraph)
+
+    def __find_segs_with_type(self, SegmentsToExtract : FindType):
         segments: list = []
         lines :list = []
 
@@ -83,10 +82,34 @@ class Segmenter:
 
             if coordinate is not None:
                 coordinate.append(text_lines_coord)
+
                 segments.append(coordinate)
 
         return segments
 
+    def extract_segments(self):
+        segments = []
+        text_blocks = self.__xmldoc.getElementsByTagName('TextBlock')
+
+        for text_block in text_blocks:
+            text_block_coordinates = self.__extract_coordinates(text_block)
+            segment = self.make_segment_by_coordinates(text_block_coordinates)
+            text_lines = text_block.getElementsByTagName('TextLine')
+            style = text_lines[0].attributes['STYLEREFS'].value
+
+            if style in self.__para_fonts:
+                segment.type = "paragraph"
+            else:
+                segment.type = "headline"
+
+            for text_line in text_lines:
+                text_line_coordinates = self.__extract_coordinates(text_line)
+                line = self.make_line_by_coordinates(text_line_coordinates)
+                segment.lines.append(line)
+
+            segments.append(segment)
+
+        return segments
 
     def __extract_coordinates(self, element: minidom):
         coordinates = [
@@ -107,34 +130,13 @@ class Segmenter:
             coordinates[2] += self.__margin
             coordinates[3] += self.__margin
 
-        #Fix der fjerner små boxe. slet hvis anden reperation kommer op at køre
-        #if int(self.__inch1200_to_px(int(element.attributes['WIDTH'].value))) <= 50:
-            #return None
-
         return coordinates
 
     def __inch1200_to_px(self, inch1200: int):
         return int(round((inch1200 * self.__dpi)/1200))
 
-    def __check_lines(self, lines: minidom):
-        print("")
-
-        for text_line in lines:
-            print(self.__inch1200_to_px(int(text_line.attributes['WIDTH'].value)))
-
-        print("")
-
-        return []
-
-    def __findFontSizes(self):
-        fonts = {}
-        styles = self.__xmldoc.getElementsByTagName('TextStyle')
-        for style in styles:
-            fonts[str(style.attributes['ID'].value)] = float(style.attributes['FONTSIZE'].value)
-        return fonts
-
     def font_statistics(self):
-        fonts: dict = self.__findFontSizes()
+        fonts: dict = self.__find_font_sizes()
         stats = {}
 
         for key in fonts:
@@ -148,12 +150,26 @@ class Segmenter:
 
         most_used_font = max(stats.items(), key=operator.itemgetter(1))[0]
 
-        #print("Most used fontsize: "+str(most_used_font))
-
         for key in fonts:
             if fonts.get(key) <= fonts.get(most_used_font)+1:
-                #print("Paragraph: "+key)
                 self.__para_fonts.append(key)
             else:
-                #print("Header: " + key)
                 self.__head_fonts.append(key)
+
+    def __find_font_sizes(self):
+        fonts = {}
+        styles = self.__xmldoc.getElementsByTagName('TextStyle')
+        for style in styles:
+            fonts[str(style.attributes['ID'].value)] = float(style.attributes['FONTSIZE'].value)
+        return fonts
+
+    def make_segment_by_coordinates(self, coordinates: list):
+        segment = Segment()
+        segment.pos_x = coordinates[0]
+        segment.pos_y = coordinates[1]
+        segment.lower_x = coordinates[2]
+        segment.lower_y = coordinates[3]
+        return segment;
+
+    def make_line_by_coordinates(self, coordinates: list):
+        return Line(coordinates[0], coordinates[1], coordinates[2], coordinates[3])
