@@ -62,9 +62,9 @@ class RepairSegments:
                         elif segment[1] <= subsegment[3] <= segment[3]:
                             subsegment[3] = segment[1]
                     # hvis subsegment ligger Segment med forskellige x-koordinater: split op i mindre bokse
-                elif ((segment[1] <= subsegment[1] <= segment[3] or segment[1] <= subsegment[3] <= segment[3]) and (segment[0] <= subsegment[0] <= segment[2] or segment[0] <= subsegment[2] <= segment[2])):
-
+                    elif (segment[1] <= subsegment[1] <= segment[3] or segment[1] <= subsegment[3] <= segment[3]) and (segment[0] <= subsegment[0] <= segment[2] or segment[0] <= subsegment[2] <= segment[2]):
                         print("segment 1:" + str(segment[1]) + " Segment 2:" + str(subsegment[1]) + "\n")
+
 
                         lines: list = segment[4]
                         grouped_lines = []
@@ -74,6 +74,7 @@ class RepairSegments:
 
                         while counter < (len(lines)-1):
                             line = lines[counter]
+
                             length = (int(line[2]) - int(line[0]))
                             line1_changed = False
                             line2_changed = False
@@ -105,20 +106,15 @@ class RepairSegments:
                                 grouped_lines.append(line)
 
                             counter += 1
+                        #print(segments_to_remove)
 
-                        segments_to_remove.append(self.__segments.index(segment))
-
-                        if len(grouped_lines) > 0:
                             grouped_lines.append(lines[counter])
-                            new_coordinates = self.find_split_coordinates(grouped_lines)
-                            new_coordinates.append(grouped_lines)
-                            self.__add_segment(self.__new_segments, new_coordinates[0], new_coordinates[1], new_coordinates[2], new_coordinates[3], new_coordinates[4])
-                            grouped_lines.clear()
 
 
-
+        #for index in segments_to_remove:
+            #del_segment
         self.__segments.extend(self.__new_segments)
-        return self.__segments
+        return self.__new_segments
 
     def __add_segment(self, segments: list, x, y, x2, y2, lines):
         segments.append([x, y, x2, y2, lines])
@@ -130,12 +126,10 @@ class RepairSegments:
         box_height = 0
         box_width = 0
         pos_x = grouped_lines_split[0][0]
-        pos_y = grouped_lines_split[0][1]
+        pos_y = grouped_lines_split[0][0]
         counter = 0
         coordinates = []
         last_line_index = len(grouped_lines_split)
-
-
 
         # Finds width and height line and change box height and width accordingly
         for line in grouped_lines_split:
