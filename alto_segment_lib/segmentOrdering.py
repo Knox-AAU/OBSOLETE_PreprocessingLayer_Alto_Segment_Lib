@@ -1,17 +1,24 @@
 import statistics
 from itertools import count
+from os import environ
 from xml.dom import minidom
 import operator
 import enum
+from matplotlib.patches import ConnectionPatch
+
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 from PIL import Image
 from alto_segment_lib.segment import Segment
+from line_extractor.extractor import LineExtractor
+from line_extractor import Line
+environ["OPENCV_IO_ENABLE_JASPER"] = "true"
+import cv2
 
 
 class SegmentOrdering:
     File_path = "/Users/Alexi/Desktop/KnoxFiler/4/"
-    File_name = "aalborgstiftstidende-1942-01-02-01-0028B"
+    File_name = "aalborgstiftstidende-1942-01-02-01-0026B"
     Paragraph_normal_width: float
 
     def __init__(self, file_path="/Users/Alexi/Desktop/KnoxFiler/4/", file_name="aalborgstiftstidende-1942-01-02-01-0028B"):
@@ -29,12 +36,13 @@ class SegmentOrdering:
             headers.append(header)
 
         # Remove Date, paper name, page number
+        self.__y_cord_of_top_vertical_line()
         headers = self.__removeDatePapernamePagenumber(headers)
         paragraphs = self.__removeDatePapernamePagenumber(paragraphs)
 
         # Match headers with subheaders
         headers_with_subheaders = self.__matchHeadersWithSubheaders(headers, self.Paragraph_normal_width)
-        self.__displayHeaderPairs(headers_with_subheaders)
+        # self.__displayHeaderPairs(headers_with_subheaders)
 
         # Match paragraphs with each other in order per article
         # articles: list = [[]]       # A list of articles with their paragraphs in an ordered list, and their header(s) as the first (and second) element(s)
@@ -52,6 +60,40 @@ class SegmentOrdering:
             if segment.pos_y < page_header_ends_at:
                 segments.remove(segment)
         return segments
+
+    def __y_cord_of_top_vertical_line(self):
+        line_extractor = LineExtractor()
+        all_lines = line_extractor.extract_lines_via_path(self.File_path + self.File_name + ".jp2")
+        lines: list = [Line]
+
+        # Find the right line
+        for line in all_lines:
+            if line.y1 > 500 or line.y2 > 500 or line.y1 < 50:
+                continue
+            print(line)
+            lines.append(line)
+
+        # Find the top three lines
+        average_y = self.__find_top_three_lines(lines)
+
+
+        # img = cv2.imread(self.File_path + self.File_name + ".jp2", cv2.CV_8UC1)
+        # line_extractor.show_lines_on_image(img, great_lines)
+
+        self.__displayLines(lines)
+
+    def __sort(self):
+
+    def __find_top_three_lines(self, lines) -> int:
+        current_max_y = -1
+        top_three_lines: list = []
+
+        for line in lines:
+            if current_max_y == -1:
+                top_three_lines.append(line)
+                current_max_y
+
+
 
     def __sort_by_y_cord(self, header: Segment):
         """ Simply used to sort a list of headers by their y coordinate
@@ -141,6 +183,19 @@ class SegmentOrdering:
                               facecolor='none'))
 
         plt.savefig(self.File_path + "Pairs75.png", dpi=1000, bbox_inches='tight')
+
+    def __displayLines(self, lines: list):
+        """ Outputs a picture with headers and subheaders marked
+        :param headers_with_subheaders: A list of pairs and non pairs of headers
+        """
+        plt.imshow(Image.open(self.File_path + self.File_name + ".jp2"))
+        plt.rcParams.update({'font.size': 3, 'text.color': "red", 'axes.labelcolor': "red"})
+
+        for line in lines:
+            plt.gca().add_patch(
+                ConnectionPatch((line[0][0], line[0][1]), (line[1][0], line[1][1]), coordsA='data',linewidth=0.3, edgecolor='r', facecolor='none'))
+
+        plt.savefig(self.File_path + "Lines.png", dpi=1000, bbox_inches='tight')
 
     def __matchParagraphsWithHeaders(self, headers_with_subheaders, paragraphs):
         pass

@@ -2,6 +2,9 @@ import configparser
 import math
 from math import atan2
 
+from line_extractor.Line import Line
+
+
 class HoughBundler:
     '''Clasterize and merge each cluster of cv2.HoughLinesP() output
     a = HoughBundler()
@@ -12,12 +15,7 @@ class HoughBundler:
         self.config = configparser.ConfigParser()
         self.config.read('config.ini')
 
-    def get_orientation(self, line):
-        '''get orientation of a line, using its length
-        https://en.wikipedia.org/wiki/Atan2
-        '''
-        orientation = math.atan2(abs((line[0] - line[2])), abs((line[1] - line[3])))
-        return math.degrees(orientation)
+
 
     def checker(self, line_new, groups, min_distance_to_merge, min_angle_to_merge):
         '''Check if line have enough distance and angle to be count as similar
@@ -28,8 +26,8 @@ class HoughBundler:
                 # check distance
                 if self.get_distance(line_old, line_new) < min_distance_to_merge:
                     # check the angle between lines
-                    orientation_new = self.get_orientation(line_new)
-                    orientation_old = self.get_orientation(line_old)
+                    orientation_new = line_new.get_orientation()
+                    orientation_old = line_old.get_orientation()
                     # if all is ok -- line is similar to others in group
                     if abs(orientation_new - orientation_old) < min_angle_to_merge:
                         group.append(line_new)
@@ -42,34 +40,33 @@ class HoughBundler:
         http://local.wasp.uwa.edu.au/~pbourke/geometry/pointline/source.vba
         """
         px, py = point
-        x1, y1, x2, y2 = line
 
         def lineMagnitude(x1, y1, x2, y2):
             'Get line (aka vector) length'
             lineMagnitude = math.sqrt(math.pow((x2 - x1), 2) + math.pow((y2 - y1), 2))
             return lineMagnitude
 
-        LineMag = lineMagnitude(x1, y1, x2, y2)
+        LineMag = line.length
         if LineMag < 0.00000001:
             DistancePointLine = 9999
             return DistancePointLine
 
-        u1 = (((px - x1) * (x2 - x1)) + ((py - y1) * (y2 - y1)))
+        u1 = (((px - line.x1) * (line.x2 - line.x1)) + ((py - line.y1) * (line.y2 - line.y1)))
         u = u1 / (LineMag * LineMag)
 
         if (u < 0.00001) or (u > 1):
             # // closest point does not fall within the line segment, take the shorter distance
             # // to an endpoint
-            ix = lineMagnitude(px, py, x1, y1)
-            iy = lineMagnitude(px, py, x2, y2)
+            ix = lineMagnitude(px, py, line.x1, line.y1)
+            iy = lineMagnitude(px, py, line.x2, line.y2)
             if ix > iy:
                 DistancePointLine = iy
             else:
                 DistancePointLine = ix
         else:
             # Intersecting point is on the line, use the formula
-            ix = x1 + u * (x2 - x1)
-            iy = y1 + u * (y2 - y1)
+            ix = line.x1 + u * (line.x2 - line.x1)
+            iy = line.y1 + u * (line.y2 - line.y1)
             DistancePointLine = lineMagnitude(px, py, ix, iy)
 
         return DistancePointLine
@@ -78,10 +75,10 @@ class HoughBundler:
         """Get all possible distances between each dot of two lines and second line
         return the shortest
         """
-        dist1 = self.DistancePointLine(a_line[:2], b_line)
-        dist2 = self.DistancePointLine(a_line[2:], b_line)
-        dist3 = self.DistancePointLine(b_line[:2], a_line)
-        dist4 = self.DistancePointLine(b_line[2:], a_line)
+        dist1 = self.DistancePointLine([a_line.x1, a_line.y1], b_line)
+        dist2 = self.DistancePointLine([a_line.x2, a_line.y2], b_line)
+        dist3 = self.DistancePointLine([b_line.x1, b_line.y1], a_line)
+        dist4 = self.DistancePointLine([b_line.x1, b_line.y1], a_line)
 
         return min(dist1, dist2, dist3, dist4)
 
@@ -103,17 +100,17 @@ class HoughBundler:
     def merge_lines_segments1(self, lines):
         """Sort lines cluster and return first and last coordinates
         """
-        orientation = self.get_orientation(lines[0])
+        orientation = lines[0].get_orientation()
 
         # special case
-        if (len(lines) == 1):
-            return [lines[0][:2], lines[0][2:]]
+        if len(lines) == 1:
+            return lines[0]
 
         # [[1,2,3,4],[]] to [[1,2],[3,4],[],[]]
         points = []
         for line in lines:
-            points.append(line[:2])
-            points.append(line[2:])
+            points.append([line.x1, line.y1])
+            points.append([line.x2, line.y2])
         # if horizontal
         if 45 < orientation < 135:
             # sort by x
@@ -124,7 +121,7 @@ class HoughBundler:
 
         # return first and last point in sorted group
         # [[x,y],[x,y]]
-        return [points[0], points[-1]]
+        return Line(points[0][0], points[0][1], points[-1][0], points[-1][1])
 
     def process_lines(self, lines):
         '''Main function for lines from cv.HoughLinesP() output merging
@@ -135,16 +132,16 @@ class HoughBundler:
         lines_x = []
         lines_y = []
         # for every line of cv2.HoughLinesP()
-        for line_i in [l[0] for l in lines]:
-            orientation = self.get_orientation(line_i)
+        for line_i in lines:
+            orientation = line_i.get_orientation()
             # if horizontal
             if 45 < orientation < 135:
                 lines_x.append(line_i)
             else:
                 lines_y.append(line_i)
 
-        lines_y = sorted(lines_y, key=lambda line: line[1])
-        lines_x = sorted(lines_x, key=lambda line: line[0])
+        lines_y = sorted(lines_y, key=lambda line: line.y1)
+        lines_x = sorted(lines_x, key=lambda line: line.x1)
         merged_lines_all = []
 
         # for each cluster in vertical and horizantal lines leave only one line

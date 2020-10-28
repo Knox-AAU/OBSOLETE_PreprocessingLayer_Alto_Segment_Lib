@@ -7,9 +7,9 @@ from PIL import Image
 
 #filepath = "/Users/tlorentzen/Desktop/Example/1942/aalborgstiftstidende-1942-01-02-01-0028B"
 # filepath = "/Users/tlorentzen/Desktop/Example/2006/nordjyskestiftstidende-2006-10-10-01-0829A"
-filepath = "/Users/Alexi/Desktop/KnoxFiler/4/aalborgstiftstidende-1942-01-02-01-0028B"
+filepath = "/Users/Alexi/Desktop/KnoxFiler/4/aalborgstiftstidende-1942-01-02-01-0026B"
 File_path = "/Users/Alexi/Desktop/KnoxFiler/4/"
-File_name = "aalborgstiftstidende-1942-01-02-01-0028B"
+File_name = "aalborgstiftstidende-1942-01-02-01-0026B"
 
 
 def displaySegments(segments):
