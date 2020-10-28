@@ -4,9 +4,11 @@ import enum
 from alto_segment_lib.segment import Segment
 from alto_segment_lib.segment import Line
 
+
 class FindType(enum.Enum):
     Paragraph = 1
     Header = 2
+
 
 class Segmenter:
     __path: str
@@ -35,7 +37,7 @@ class Segmenter:
 
         for element in elements:
             coordinate = self.__extract_coordinates(element)
-            segments.append(self.make_segment_by_coordinates(coordinate))
+            segments.append(Segment(coordinate))
 
         return segments
 
@@ -82,7 +84,6 @@ class Segmenter:
 
             if coordinate is not None:
                 coordinate.append(text_lines_coord)
-
                 segments.append(coordinate)
 
         return segments
@@ -93,18 +94,20 @@ class Segmenter:
 
         for text_block in text_blocks:
             text_block_coordinates = self.__extract_coordinates(text_block)
-            segment = self.make_segment_by_coordinates(text_block_coordinates)
+            segment = Segment(text_block_coordinates)
             text_lines = text_block.getElementsByTagName('TextLine')
             style = text_lines[0].attributes['STYLEREFS'].value
 
             if style in self.__para_fonts:
                 segment.type = "paragraph"
-            else:
+            elif style in self.__head_fonts:
                 segment.type = "headline"
+            else:
+                segment.type = "Unknown"
 
             for text_line in text_lines:
                 text_line_coordinates = self.__extract_coordinates(text_line)
-                line = self.make_line_by_coordinates(text_line_coordinates)
+                line = Line(text_line_coordinates)
                 segment.lines.append(line)
 
             segments.append(segment)
@@ -162,14 +165,3 @@ class Segmenter:
         for style in styles:
             fonts[str(style.attributes['ID'].value)] = float(style.attributes['FONTSIZE'].value)
         return fonts
-
-    def make_segment_by_coordinates(self, coordinates: list):
-        segment = Segment()
-        segment.pos_x = coordinates[0]
-        segment.pos_y = coordinates[1]
-        segment.lower_x = coordinates[2]
-        segment.lower_y = coordinates[3]
-        return segment;
-
-    def make_line_by_coordinates(self, coordinates: list):
-        return Line(coordinates[0], coordinates[1], coordinates[2], coordinates[3])
