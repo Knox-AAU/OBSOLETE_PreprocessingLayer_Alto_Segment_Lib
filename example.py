@@ -20,11 +20,11 @@ if __name__ == '__main__':
 
     paragraphs = [segment for segment in segments if segment.type == "paragraph"]
     repair = RepairSegments(paragraphs, 30)
-    repair.repair_columns()
-    rep_rows_segments = repair.repair_rows()
+    rep_rows_segments1 = repair.repair_columns()
+    rep_rows_segments2 = repair.repair_rows()
 
-    for seg in segments:
-        print('x:{0} y:{1} x1:{2} y2:{3} - {4}'.format(str(seg.pos_x), str(seg.pos_y), str(seg.lower_x), str(seg.lower_y), seg.type))
+    # for seg in segments:
+    #     print('x:{0} y:{1} x1:{2} y2:{3} - {4}'.format(str(seg.pos_x), str(seg.pos_y), str(seg.lower_x), str(seg.lower_y), seg.type))
 
 
     #segmenter.font_statistics()
