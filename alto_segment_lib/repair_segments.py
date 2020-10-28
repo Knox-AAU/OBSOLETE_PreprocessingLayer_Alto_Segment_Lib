@@ -133,14 +133,15 @@ class RepairSegments:
         return line1_changed and line2_changed
 
     def add_last_segment(self, lines, counter, grouped_lines, return_segments, segment):
-        grouped_lines.append(lines[counter])
-        if len(grouped_lines) > 0:
-            new_coordinates = self.make_box_around_lines(grouped_lines)
+        if not counter >= len(lines):
+            grouped_lines.append(lines[counter])
+            if len(grouped_lines) > 0:
+                new_coordinates = self.make_box_around_lines(grouped_lines)
 
-            if new_coordinates is not None:
-                self.__add_segment(self.__new_segments, new_coordinates[0], new_coordinates[1], new_coordinates[2], new_coordinates[3], grouped_lines, segment.type)
-            grouped_lines.clear()
-            return_segments.remove(segment)
+                if new_coordinates is not None:
+                    self.__add_segment(self.__new_segments, new_coordinates[0], new_coordinates[1], new_coordinates[2], new_coordinates[3], grouped_lines, segment.type)
+                grouped_lines.clear()
+                return_segments.remove(segment)
 
     def __add_segment(self, segments: list, x, y, x2, y2, lines, type: str):
         segment = Segment()

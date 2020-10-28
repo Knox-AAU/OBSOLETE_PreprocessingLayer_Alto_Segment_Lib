@@ -74,10 +74,10 @@ class Segmenter:
             coordinate = None
 
             if SegmentsToExtract == FindType.Header:
-                if text_lines[0].attributes['STYLEREFS'].value in self.__para_fonts:
+                if text_lines[0].attributes['STYLEREFS'].value not in self.__para_fonts:
                     coordinate = self.__extract_coordinates(text_block)
             elif SegmentsToExtract == FindType.Paragraph:
-                if text_lines[0].attributes['STYLEREFS'].value not in self.__para_fonts:
+                if text_lines[0].attributes['STYLEREFS'].value in self.__para_fonts:
                     coordinate = self.__extract_coordinates(text_block)
 
             if coordinate is not None:
