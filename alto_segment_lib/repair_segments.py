@@ -50,16 +50,17 @@ class RepairSegments:
         for segment in self.__segments:
             for subsegment in self.__segments:
                 if not segment.compare(subsegment):
-                    lines: list = segment.lines
+                    lines = []
+                    lines = segment.lines
                     grouped_lines = []
-
 
                     # Checks if subsegment is vertically close to segment
                     if (segment.pos_x - range_span) <= subsegment.pos_x <= (segment.pos_x + range_span):
 
                         # Checks if both y-coordinates for the subsegment is within the segment: remove the subsegment
                         if segment.between_y_coords(subsegment.pos_y) and segment.between_y_coords(subsegment.lower_y):
-                            return_segments.remove(subsegment)
+                            #return_segments.remove(subsegment)
+                            None
                         # Checks if  the  upper y-coordinate for subsegment is within segment: move y-coordinate to
                         # be beside segment
                         elif segment.between_y_coords(subsegment.pos_y):
@@ -131,9 +132,6 @@ class RepairSegments:
                             grouped_lines.clear()
                             return_segments.remove(segment)
 
-
-
-
         return_segments.extend(self.__new_segments)
         return return_segments
 
@@ -182,9 +180,3 @@ class RepairSegments:
         coordinates.append(box_height)
 
         return coordinates
-
-
-
-"""
-                        
-"""

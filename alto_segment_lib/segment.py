@@ -5,7 +5,7 @@ class Segment:
     pos_y: int
     lower_x: int
     lower_y: int
-    lines: list = []
+    lines: list
 
     def __init__(self, coord: list = None, seg_type: str = ""):
         self.lines = []
@@ -27,11 +27,11 @@ class Segment:
         return (self.pos_x == segment.pos_x and self.pos_y == segment.pos_y
                 and self.lower_x == segment.lower_x and self.lower_y == segment.lower_y)
 
-    def between_x_coords(self, coord: int):
-        return self.pos_x <= coord <= self.lower_x
+    def between_x_coords(self, coord: int, margin: float = 0.0):
+        return (self.pos_x*(1-margin)) <= coord <= (self.lower_x*(1+margin))
 
-    def between_y_coords(self, coord: int):
-        return self.pos_y <= coord <= self.lower_y
+    def between_y_coords(self, coord: int, margin: int = 0):
+        return (self.pos_y*(1-margin)) <= coord <= (self.lower_y*(1+margin))
 
     def width(self):
         return self.lower_x - self.pos_x

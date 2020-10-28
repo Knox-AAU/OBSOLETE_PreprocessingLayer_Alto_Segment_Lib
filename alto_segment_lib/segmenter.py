@@ -108,6 +108,8 @@ class Segmenter:
             for text_line in text_lines:
                 text_line_coordinates = self.__extract_coordinates(text_line)
                 line = Line(text_line_coordinates)
+
+               # if segment.between_x_coords(line.pos_x+10) and segment.between_x_coords(line.lower_x-10):
                 segment.lines.append(line)
 
             segments.append(segment)
