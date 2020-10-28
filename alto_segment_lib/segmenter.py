@@ -169,7 +169,31 @@ class Segmenter:
         segment.pos_y = coordinates[1]
         segment.lower_x = coordinates[2]
         segment.lower_y = coordinates[3]
-        return segment;
+        return segment
 
     def make_line_by_coordinates(self, coordinates: list):
         return Line(coordinates[0], coordinates[1], coordinates[2], coordinates[3])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

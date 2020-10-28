@@ -6,6 +6,7 @@ import enum
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 from PIL import Image
+from alto_segment_lib.segment import Segment
 
 
 class SegmentOrdering:
@@ -47,17 +48,17 @@ class SegmentOrdering:
         """
         page_header_ends_at = 300
         segments = [i for i in segments if i]
-        for elm in segments:
-            if elm[1] < page_header_ends_at:
-                segments.remove(elm)
+        for segment in segments:
+            if segment.pos_y < page_header_ends_at:
+                segments.remove(segment)
         return segments
 
-    def __sort_by_y_cord(self, header):
+    def __sort_by_y_cord(self, header: Segment):
         """ Simply used to sort a list of headers by their y coordinate
         :param header: Header to check
         :return: The headers y coordinate
         """
-        return header[1]
+        return header.pos_y
 
     def __matchHeadersWithSubheaders(self, headers, median_line_width: float):
         """ Finds header, subheader pairs and returns them
@@ -93,21 +94,20 @@ class SegmentOrdering:
 
         return headers_with_subheaders
 
-    def __is_subheader(self, header, possible_subheader, median_line_width):
+    def __is_subheader(self, header: Segment, possible_subheader: Segment, median_line_width: float):
         """ Checks if the possible_subheader is a subheader to the header
         :param header: Header segment
         :param possible_subheader: The header segment to check if it's a subheader to the header
         :param median_line_width: Normal paragraph width
         :return: True if they are a pair, false if aren't
         """
-        header_width = header[2] - header[0]
-        subheader_height = possible_subheader[3] - possible_subheader[1]
+        header_width = header.lower_x - header.pos_x
+        subheader_height = possible_subheader.lower_y - possible_subheader.pos_y
 
-        if (-20 <= possible_subheader[1] - header[3] < 200 and -header_width <= header[0] - possible_subheader[
-            0] <= header_width) \
-                or (header[2] - header[0] < median_line_width * 0.6
-                    and -subheader_height <= possible_subheader[1] - header[3] < subheader_height and -50 <= header[2] -
-                    possible_subheader[0] <= header_width):
+        if (-20 <= possible_subheader.pos_y - header.lower_y < 200 and -header_width <= header.pos_x - possible_subheader.pos_x <= header_width) \
+                or (header.lower_x - header.pos_x < median_line_width * 0.6
+                    and -subheader_height <= possible_subheader.pos_y - header.lower_y < subheader_height and -50 <= header.lower_x -
+                    possible_subheader.pos_x <= header_width):
             return True
         else:
             return False
@@ -119,10 +119,10 @@ class SegmentOrdering:
         """
         all_para = []
         for segment in segments:
-            all_para.append(segment[2] - segment[0])
+            all_para.append(segment.lower_x - segment.pos_x)
         return float(statistics.median(all_para))
 
-    def __displayHeaderPairs(self, headers_with_subheaders):
+    def __displayHeaderPairs(self, headers_with_subheaders: list):
         """ Outputs a picture with headers and subheaders marked
         :param headers_with_subheaders: A list of pairs and non pairs of headers
         """
@@ -130,14 +130,14 @@ class SegmentOrdering:
         plt.rcParams.update({'font.size': 3, 'text.color': "red", 'axes.labelcolor': "red"})
 
         for pair in headers_with_subheaders:
-            if len(pair) > 1:
-                plt.gca().add_patch(
-                    Rectangle((pair[0][0], pair[0][1]), (pair[1][2] - pair[0][0]), (pair[1][3] - pair[0][1]),
-                              linewidth=0.3, edgecolor='r',
-                              facecolor='none'))
             for elm in pair:
                 plt.gca().add_patch(
-                    Rectangle((elm[0], elm[1]), (elm[2] - elm[0]), (elm[3] - elm[1]), linewidth=0.3, edgecolor='b',
+                    Rectangle((elm.pos_x, elm.pos_y), (elm.lower_x - elm.pos_x), (elm.lower_y - elm.pos_y), linewidth=0.3, edgecolor='b',
+                              facecolor='none'))
+            if len(pair) > 1:
+                plt.gca().add_patch(
+                    Rectangle((pair[0].pos_x, pair[0].pos_y), (pair[1].lower_x - pair[0].pos_x), (pair[1].lower_y - pair[0].pos_y),
+                              linewidth=0.3, edgecolor='r',
                               facecolor='none'))
 
         plt.savefig(self.File_path + "Pairs75.png", dpi=1000, bbox_inches='tight')

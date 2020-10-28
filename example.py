@@ -26,21 +26,18 @@ def displaySegments(segments):
     for segment in segments:
         plt.gca().add_patch(Rectangle((segment.pos_x, segment.pos_y), (segment.lower_x-segment.pos_x), (segment.lower_y-segment.pos_y), linewidth=0.3, edgecolor='r', facecolor='none'))
         plt.text(segment.pos_x+25, segment.pos_y+30, "["+str(counter)+"]", horizontalalignment='left', verticalalignment='top')
-        # plt.text(seg[0]+45, seg[1] + 200, str((seg[2]-seg[0])), horizontalalignment='left', verticalalignment='top')
         counter += 1
 
-    plt.savefig(filepath+"-out.png",dpi=300, bbox_inches='tight')
+    plt.savefig(filepath+"-out.png", dpi=300, bbox_inches='tight')
 
 if __name__ == '__main__':
     segmenter = Segmenter(filepath + ".alto.xml")
     segmenter.set_dpi(300)
     segmenter.set_margin(0)
 
-    # segments = segmenter.extract_segments()
-    # segments_para = [segment for segment in segments if segment.type == "paragraph"]
-    # segments_headers = [segment for segment in segments if segment.type == "header"]
-    segments_para = segmenter.find_paragraphs()
-    segments_headers = segmenter.find_headlines()
+    segments = segmenter.extract_segments()
+    segments_para = [segment for segment in segments if segment.type == "paragraph"]
+    segments_headers = [segment for segment in segments if segment.type == "headline"]
 
     segmentOrder = SegmentOrdering(File_path, File_name)
     segmentsInArticles = segmentOrder.distributeSegmentsIntoArticles(segments_headers, segments_para)
