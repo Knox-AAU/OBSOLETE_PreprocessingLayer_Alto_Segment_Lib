@@ -10,7 +10,11 @@ class FindType(enum.Enum):
     Header = 2
 
 
-class Segmenter:
+def determine_most_frequent_list_element(the_list: list):
+    return max(set(the_list), key=the_list.count)
+
+
+class AltoSegmentExtractor:
     __path: str
     __dpi: int
     __margin: int
@@ -18,18 +22,28 @@ class Segmenter:
     __para_fonts = []
     __head_fonts = []
 
-    def __init__(self, alto_path: str, dpi: int = 300, margin: int = 0):
-        self.__path = alto_path
+    def __init__(self, alto_path: str = "", dpi: int = 300, margin: int = 0):
         self.__dpi = dpi
         self.__margin = margin
+        if not alto_path == "":
+            self.set_path(alto_path)
+
+    def set_path(self, path: str):
+        self.__path = path
         self.__xmldoc = minidom.parse(self.__path)
-        self.font_statistics()
+        self.__font_statistics()
 
     def set_dpi(self, dpi: int):
         self.__dpi = dpi
 
+    def get_dpi(self):
+        return self.__dpi
+
     def set_margin(self, margin: int):
         self.__margin = margin
+
+    def get_margin(self):
+        return self.__margin
 
     def __find_segments_by_tag_name(self, tagname: str):
         segments: list = []
@@ -64,9 +78,9 @@ class Segmenter:
     def find_paragraphs(self):
         return self.__find_segs_with_type(FindType.Paragraph)
 
-    def __find_segs_with_type(self, SegmentsToExtract : FindType):
+    def __find_segs_with_type(self, SegmentsToExtract: FindType):
         segments: list = []
-        lines :list = []
+        lines: list = []
 
         text_blocks = self.__xmldoc.getElementsByTagName('TextBlock')
 
@@ -96,7 +110,16 @@ class Segmenter:
             text_block_coordinates = self.__extract_coordinates(text_block)
             segment = Segment(text_block_coordinates)
             text_lines = text_block.getElementsByTagName('TextLine')
-            style = text_lines[0].attributes['STYLEREFS'].value
+            text_line_fonts = []
+
+            for text_line in text_lines:
+                text_line_coordinates = self.__extract_coordinates(text_line)
+                line = Line(text_line_coordinates)
+                if segment.between_x_coords(line.pos_x+10) and segment.between_x_coords(line.lower_x-10):
+                    text_line_fonts.append(text_line.attributes['STYLEREFS'].value)
+                    segment.lines.append(line)
+
+            style = determine_most_frequent_list_element(text_line_fonts)
 
             if style in self.__para_fonts:
                 segment.type = "paragraph"
@@ -104,13 +127,6 @@ class Segmenter:
                 segment.type = "headline"
             else:
                 segment.type = "Unknown"
-
-            for text_line in text_lines:
-                text_line_coordinates = self.__extract_coordinates(text_line)
-                line = Line(text_line_coordinates)
-
-               # if segment.between_x_coords(line.pos_x+10) and segment.between_x_coords(line.lower_x-10):
-                segment.lines.append(line)
 
             segments.append(segment)
 
@@ -120,14 +136,14 @@ class Segmenter:
         coordinates = [
             int(element.attributes['HPOS'].value),
             int(element.attributes['VPOS'].value),
-            int(element.attributes['WIDTH'].value)+int(element.attributes['HPOS'].value),
-            int(element.attributes['HEIGHT'].value)+int(element.attributes['VPOS'].value)
+            int(element.attributes['WIDTH'].value) + int(element.attributes['HPOS'].value),
+            int(element.attributes['HEIGHT'].value) + int(element.attributes['VPOS'].value)
         ]
 
         for idx in range(4):
             va = coordinates[idx]
             if isinstance(va, int):
-                coordinates[idx] = self.__inch1200_to_px(coordinates[idx])
+                coordinates[idx] = self.inch1200_to_px(coordinates[idx])
 
         if self.__margin > 0:
             coordinates[0] -= self.__margin
@@ -137,10 +153,10 @@ class Segmenter:
 
         return coordinates
 
-    def __inch1200_to_px(self, inch1200: int):
-        return int(round((inch1200 * self.__dpi)/1200))
+    def inch1200_to_px(self, inch1200: int):
+        return int(round((inch1200 * self.__dpi) / 1200))
 
-    def font_statistics(self):
+    def __font_statistics(self):
         fonts: dict = self.__find_font_sizes()
         stats = {}
 
@@ -156,7 +172,7 @@ class Segmenter:
         most_used_font = max(stats.items(), key=operator.itemgetter(1))[0]
 
         for key in fonts:
-            if fonts.get(key) <= fonts.get(most_used_font)+1:
+            if fonts.get(key) <= fonts.get(most_used_font) + 1:
                 self.__para_fonts.append(key)
             else:
                 self.__head_fonts.append(key)

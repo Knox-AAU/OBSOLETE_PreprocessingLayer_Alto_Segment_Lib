@@ -1,8 +1,12 @@
-from xml.dom import minidom
 from alto_segment_lib.segment import Segment
-import operator
 import statistics
-import numpy
+
+
+def add_segment(segments: list, coordinates: list, lines, seg_type: str):
+    segment = Segment(coordinates)
+    segment.lines = lines
+    segment.type = seg_type
+    segments.append(segment)
 
 
 class RepairSegments:
@@ -39,7 +43,7 @@ class RepairSegments:
 
                 # Make segment
                 coords = [segment.pos_x + (cur_seg_width / 2) + 5, segment.pos_y, segment.lower_x + (cur_seg_width / 2), segment.lower_y]
-                self.__add_segment(self.__segments, coords, [], segment.type)
+                add_segment(self.__segments, coords, [], segment.type)
 
         return self.__segments
 
@@ -50,7 +54,6 @@ class RepairSegments:
         for segment in self.__segments:
             for subsegment in self.__segments:
                 if not segment.compare(subsegment):
-                    lines = []
                     lines = segment.lines
                     grouped_lines = []
 
@@ -59,8 +62,7 @@ class RepairSegments:
 
                         # Checks if both y-coordinates for the subsegment is within the segment: remove the subsegment
                         if segment.between_y_coords(subsegment.pos_y) and segment.between_y_coords(subsegment.lower_y):
-                            #return_segments.remove(subsegment)
-                            None
+                            return_segments.remove(subsegment)
                         # Checks if  the  upper y-coordinate for subsegment is within segment: move y-coordinate to
                         # be beside segment
                         elif segment.between_y_coords(subsegment.pos_y):
@@ -113,7 +115,7 @@ class RepairSegments:
                                 new_coordinates = self.__make_box_around_lines(grouped_lines)
 
                                 if new_coordinates is not None:
-                                    self.__add_segment(self.__new_segments, new_coordinates, grouped_lines, segment.type)
+                                    add_segment(self.__new_segments, new_coordinates, grouped_lines, segment.type)
 
                                 grouped_lines.clear()
                                 grouped_lines.append(lines[counter + 1])
@@ -127,19 +129,13 @@ class RepairSegments:
                             coordinates = self.__make_box_around_lines(grouped_lines)
 
                             if coordinates is not None:
-                                self.__add_segment(self.__new_segments, coordinates, grouped_lines, segment.type)
+                                add_segment(self.__new_segments, coordinates, grouped_lines, segment.type)
 
                             grouped_lines.clear()
                             return_segments.remove(segment)
 
         return_segments.extend(self.__new_segments)
         return return_segments
-
-    def __add_segment(self, segments: list, coordinates: list, lines, seg_type: str):
-        segment = Segment(coordinates)
-        segment.lines = lines
-        segment.type = seg_type
-        segments.append(segment)
 
     def get_median_column_width(self):
         return self.__median_paragraph_width
