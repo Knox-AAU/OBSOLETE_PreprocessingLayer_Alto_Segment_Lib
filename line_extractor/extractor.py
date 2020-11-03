@@ -3,9 +3,8 @@ import math
 from math import atan2
 from os import environ
 import numpy as np
-
-from line_extractor.Line import Line
-from line_extractor.houghbundler import HoughBundler
+from line_extractor.hough_bundler import HoughBundler
+from line_extractor.line import Line
 
 environ["OPENCV_IO_ENABLE_JASPER"] = "true"
 import cv2
@@ -31,39 +30,47 @@ class LineExtractor:
         self.vertical_size = int(self.config['line_enhancement']['vertical_size'])
         self.horizontal_size = int(self.config['line_enhancement']['horizontal_size'])
 
-    def extract_lines_via_path(self, image_path) -> list:
+    def extract_lines_via_path(self, image_path):
         image = cv2.imread(image_path, cv2.CV_8UC1)
         lines = self.extract_lines_via_image(image)
-        # self.show_lines_on_image(image, lines)
-        return lines
+        self.show_lines_on_image(image, lines)
 
     def extract_lines_via_image(self, image):
         enhanced_image = self.enhance_lines(image)
         return self.get_lines_from_binary_image(enhanced_image)
 
     def enhance_lines(self, image):
-        image_thresh = cv2.adaptiveThreshold(image, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY,
-                                             self.adaptive_threshold[0], self.adaptive_threshold[1])
 
+        # apply mean tresholding to bring out lines
+        image_thresh = cv2.adaptiveThreshold(image, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY,
+                                             self.adaptive_threshold[0],
+                                             self.adaptive_threshold[1])
+        # saves the thresholding image for later use
         image_horizontal = image_thresh
         image_vertical = image_thresh
 
+        # gets height and width of image, and specifies how long a line can be
         horizontal_size, vertical_size = image_thresh.shape
         horizontal_size = int(horizontal_size / self.horizontal_size)
         vertical_size = int(vertical_size / self.vertical_size)
 
-        horizontal_structure = cv2.getStructuringElement(cv2.MORPH_CROSS, (horizontal_size, 1))
+        # opencv function to find horizontal/vertical lines
+        horizontal_structure = cv2.getStructuringElement(cv2.MORPH_RECT, (horizontal_size, 1))
+        vertical_structure = cv2.getStructuringElement(cv2.MORPH_RECT, (1, vertical_size))
 
         kernel = np.ones((1, 1), np.uint8)
         image_horizontal = cv2.erode(image_horizontal, horizontal_structure, kernel)
         image_horizontal = cv2.dilate(image_horizontal, horizontal_structure, kernel)
 
-        vertical_structure = cv2.getStructuringElement(cv2.MORPH_CROSS, (1, vertical_size))
         kernel = np.ones((1, 1), np.uint8)
         image_vertical = cv2.erode(image_vertical, vertical_structure, kernel)
         image_vertical = cv2.dilate(image_vertical, vertical_structure, kernel)
 
         merged_image = cv2.addWeighted(image_horizontal, 1, image_vertical, 1, 0)
+
+        cv2.namedWindow("image", cv2.WINDOW_NORMAL)
+        cv2.imshow("image", merged_image)
+        cv2.waitKey(0)
 
         return merged_image
 
@@ -89,13 +96,12 @@ class LineExtractor:
                 filtered_lines.append(line)
         return filtered_lines
 
-
     @staticmethod
     def show_lines_on_image(image, lines):
         line_image = np.copy(image) * 0  # creating a blank to draw lines on
         line_image = cv2.cvtColor(line_image, cv2.COLOR_GRAY2RGB)
         for line in lines:
-            cv2.line(line_image, (line.x1, line.y1), (line.x2, line.y2), (0, 0, 255), 20)
+            cv2.line(line_image, (line.x1, line.y1), (line.x2, line.y2), (0, 0, 255), 3)
 
         image_in_color = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
 
