@@ -33,7 +33,7 @@ class LineExtractor:
     def extract_lines_via_path(self, image_path):
         image = cv2.imread(image_path, cv2.CV_8UC1)
         lines = self.extract_lines_via_image(image)
-        self.show_lines_on_image(image, lines)
+        return lines
 
     def extract_lines_via_image(self, image):
         enhanced_image = self.enhance_lines(image)
@@ -67,10 +67,6 @@ class LineExtractor:
         image_vertical = cv2.dilate(image_vertical, vertical_structure, kernel)
 
         merged_image = cv2.addWeighted(image_horizontal, 1, image_vertical, 1, 0)
-
-        cv2.namedWindow("image", cv2.WINDOW_NORMAL)
-        cv2.imshow("image", merged_image)
-        cv2.waitKey(0)
 
         return merged_image
 
