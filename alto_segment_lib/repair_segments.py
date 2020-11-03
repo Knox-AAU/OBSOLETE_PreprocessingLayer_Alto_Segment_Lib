@@ -144,7 +144,7 @@ class RepairSegments:
         if not counter >= len(lines):
             grouped_lines.append(lines[counter])
             if len(grouped_lines) > 0:
-                new_coordinates = self.make_box_around_lines(grouped_lines)
+                new_coordinates = self.__make_box_around_lines(grouped_lines)
 
                 if new_coordinates is not None:
                     self.__add_segment(self.__new_segments, new_coordinates[0], new_coordinates[1], new_coordinates[2], new_coordinates[3], grouped_lines, segment.type)
@@ -164,7 +164,7 @@ class RepairSegments:
     def get_avg_column_width(self):
         return self.__avg_paragraph_width
 
-    def make_box_around_lines(self, lines: list):
+    def __make_box_around_lines(self, lines: list):
         if len(lines) == 0:
             return None
 
