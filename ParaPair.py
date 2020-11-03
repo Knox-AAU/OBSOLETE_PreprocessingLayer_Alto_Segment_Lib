@@ -6,7 +6,7 @@ class ParaPair:
     element2: Any
 
     def __init__(self, elm1, elm2):
-        self.element1
-        self.element2
+        self.element1 = elm1
+        self.element2 = elm2
 
 
