@@ -140,7 +140,31 @@ class RepairSegments:
     def get_median_column_width(self):
         return self.__median_paragraph_width
 
-    def __make_box_around_lines(self, lines: list):
+    def add_last_segment(self, lines, counter, grouped_lines, return_segments, segment):
+        if not counter >= len(lines):
+            grouped_lines.append(lines[counter])
+            if len(grouped_lines) > 0:
+                new_coordinates = self.make_box_around_lines(grouped_lines)
+
+                if new_coordinates is not None:
+                    self.__add_segment(self.__new_segments, new_coordinates[0], new_coordinates[1], new_coordinates[2], new_coordinates[3], grouped_lines, segment.type)
+                grouped_lines.clear()
+                return_segments.remove(segment)
+
+    def __add_segment(self, segments: list, x, y, x2, y2, lines, type: str):
+        segment = Segment()
+        segment.pos_x = x
+        segment.pos_y = y
+        segment.lower_x = x2
+        segment.lower_y = y2
+        segment.lines = lines
+        segment.type = type
+        segments.append(segment)
+
+    def get_avg_column_width(self):
+        return self.__avg_paragraph_width
+
+    def make_box_around_lines(self, lines: list):
         if len(lines) == 0:
             return None
 
