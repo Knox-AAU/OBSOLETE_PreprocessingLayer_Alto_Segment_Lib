@@ -1,7 +1,6 @@
 import configparser
 import math
 from math import atan2
-import cv2
 from os import environ
 import numpy as np
 
@@ -9,6 +8,7 @@ from line_extractor.Line import Line
 from line_extractor.houghbundler import HoughBundler
 
 environ["OPENCV_IO_ENABLE_JASPER"] = "true"
+import cv2
 
 
 class LineExtractor:
@@ -31,10 +31,11 @@ class LineExtractor:
         self.vertical_size = int(self.config['line_enhancement']['vertical_size'])
         self.horizontal_size = int(self.config['line_enhancement']['horizontal_size'])
 
-    def extract_lines_via_path(self, image_path) -> list[Line]:
+    def extract_lines_via_path(self, image_path) -> list:
         image = cv2.imread(image_path, cv2.CV_8UC1)
         lines = self.extract_lines_via_image(image)
-        self.show_lines_on_image(image, lines)
+        # self.show_lines_on_image(image, lines)
+        return lines
 
     def extract_lines_via_image(self, image):
         enhanced_image = self.enhance_lines(image)

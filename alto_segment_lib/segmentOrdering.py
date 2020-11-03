@@ -64,34 +64,39 @@ class SegmentOrdering:
     def __y_cord_of_top_vertical_line(self):
         line_extractor = LineExtractor()
         all_lines = line_extractor.extract_lines_via_path(self.File_path + self.File_name + ".jp2")
-        lines: list = [Line]
+        lines: list = []
 
         # Find the right line
         for line in all_lines:
             if line.y1 > 500 or line.y2 > 500 or line.y1 < 50:
                 continue
-            print(line)
             lines.append(line)
 
         # Find the top three lines
         average_y = self.__find_top_three_lines(lines)
-
-
-        # img = cv2.imread(self.File_path + self.File_name + ".jp2", cv2.CV_8UC1)
-        # line_extractor.show_lines_on_image(img, great_lines)
-
         self.__displayLines(lines)
 
-    def __sort(self):
+    def __sort_by_y(self, line: Line):
+        return line.y1
 
     def __find_top_three_lines(self, lines) -> int:
         current_max_y = -1
         top_three_lines: list = []
 
-        for line in lines:
-            if current_max_y == -1:
-                top_three_lines.append(line)
-                current_max_y
+        lines.sort(key=self.__sort_by_y)
+
+        top_three_lines.append(lines[0])
+        top_three_lines.append(lines[0])
+        top_three_lines.append(lines[0])
+
+        average = (top_three_lines[0].y1 + top_three_lines[1].y1 + top_three_lines[2].y1) / 3
+        return average
+        # for line in lines:
+        #     if len(top_three_lines) >= 3:
+        #         break
+        #     if current_max_y == -1:
+        #         top_three_lines.append(line)
+        #         current_max_y
 
 
 
@@ -193,7 +198,7 @@ class SegmentOrdering:
 
         for line in lines:
             plt.gca().add_patch(
-                ConnectionPatch((line[0][0], line[0][1]), (line[1][0], line[1][1]), coordsA='data',linewidth=0.3, edgecolor='r', facecolor='none'))
+                ConnectionPatch((line.y1, line.y1), (line.x2, line.y2), coordsA='data',linewidth=0.3, edgecolor='r', facecolor='none'))
 
         plt.savefig(self.File_path + "Lines.png", dpi=1000, bbox_inches='tight')
 
