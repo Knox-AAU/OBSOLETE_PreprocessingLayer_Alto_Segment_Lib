@@ -84,11 +84,12 @@ class HoughBundler:
 
     def merge_lines_into_groups(self, lines):
         'Clusterize (group) lines'
-        groups = [lines[0]]
-        groups.append(
-            [[line_new] for line_new in lines[1:] if self.check_is_line_different(line_new, groups)])  # all lines groups are here
+        groups = [[lines[0]]]  # all lines groups are here
         # first line will create new group every time
         # if line is different from existing gropus, create a new group
+        for line_new in lines[1:]:
+            if self.check_is_line_different(line_new, groups):
+                groups.append([line_new])
 
         return groups
 
