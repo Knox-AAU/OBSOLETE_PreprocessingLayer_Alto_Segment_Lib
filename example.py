@@ -1,3 +1,5 @@
+import argparse
+
 from alto_segment_lib.repair_segments import RepairSegments
 from alto_segment_lib.alto_segment_extractor import AltoSegmentExtractor
 from alto_segment_lib.segmenter import Segmenter, FindType
@@ -6,14 +8,21 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 from PIL import Image
 
-base_path = "/Users/Alexi/Desktop/KnoxFiler/4/"
-filename = "aalborgstiftstidende-1942-01-02-01-0028B"
+#base_path = "/Users/Alexi/Desktop/KnoxFiler/4/"
+#filename = "aalborgstiftstidende-1942-01-02-01-0028B"
 filetype = ".jp2"
-filepath = base_path+filename
-
-print(filepath)
+#filepath = base_path+filename
 
 if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser()
+    # defines input and output path
+    parser.add_argument('path', help='The path to the image without filetype')
+
+    args = parser.parse_args()
+
+    filepath = args.path
+
     segmenter = AltoSegmentExtractor(filepath + ".alto.xml")
     segmenter.set_dpi(300)
     segmenter.set_margin(0)
