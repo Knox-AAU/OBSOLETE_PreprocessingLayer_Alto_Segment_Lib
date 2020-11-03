@@ -30,25 +30,25 @@ if __name__ == '__main__':
     segmenter = AltoSegmentExtractor(filepath + ".alto.xml")
     segmenter.set_dpi(300)
     segmenter.set_margin(0)
-
+    #
     segments = segmenter.extract_segments()
 
-    print("Repair segments")
-
-    paragraphs = [segment for segment in segments if segment.type == "paragraph"]
-    repair = RepairSegments(paragraphs, 30)
-    rep_rows_segments1 = repair.repair_columns()
-    rep_rows_segments2 = repair.repair_rows()
-
-    # for seg in paragraphs:
-    #    print('x:{0} y:{1} x1:{2} y2:{3} - {4}'.format(str(seg.pos_x), str(seg.pos_y), str(seg.lower_x), str(seg.lower_y), seg.type))
-
-    segments = segmenter.extract_segments()
-    segments_para = [segment for segment in segments if segment.type == "paragraph"]
-    segments_headers = [segment for segment in segments if segment.type == "headline"]
-
-    segmentOrder = SegmentOrdering(base_path, filename)
-    segmentsInArticles = segmentOrder.distributeSegmentsIntoArticles(segments_headers, segments_para)
+    # print("Repair segments")
+    #
+    # paragraphs = [segment for segment in segments if segment.type == "paragraph"]
+    # repair = RepairSegments(paragraphs, 30)
+    # rep_rows_segments1 = repair.repair_columns()
+    # rep_rows_segments2 = repair.repair_rows()
+    #
+    # # for seg in paragraphs:
+    # #    print('x:{0} y:{1} x1:{2} y2:{3} - {4}'.format(str(seg.pos_x), str(seg.pos_y), str(seg.lower_x), str(seg.lower_y), seg.type))
+    #
+    # segments = segmenter.extract_segments()
+    # segments_para = [segment for segment in segments if segment.type == "paragraph"]
+    # segments_headers = [segment for segment in segments if segment.type == "headline"]
+    #
+    # segmentOrder = SegmentOrdering(base_path, filename)
+    # segmentsInArticles = segmentOrder.distributeSegmentsIntoArticles(segments_headers, segments_para)
 
 def displaySegments(segments):
     #plt.imshow(Image.open("/home/tlorentzen/Desktop/Example/1942/aalborgstiftstidende-1942-01-02-01-0028B.tiff"))
@@ -58,7 +58,6 @@ def displaySegments(segments):
     counter = 1
 
     # Add the patch to the Axes
-
     #plt.hlines(100, 100, 100+repair.get_median_column_width(), colors='k', linestyles='solid', label='Median paragraph width')
 
     for segment in segments:
@@ -68,29 +67,3 @@ def displaySegments(segments):
         counter += 1
 
     plt.savefig(filepath+"-out.png", dpi=300, bbox_inches='tight')
-
-# if __name__ == '__main__':
-#     segmenter = Segmenter(filepath + ".alto.xml")
-#     segmenter.set_dpi(300)
-#     segmenter.set_margin(0)
-#
-#
-#
-#     if False:
-#         print("Repair segments")
-#
-#         paragraphs = [segment for segment in segments if segment.type == "paragraph"]
-#         repair = RepairSegments(paragraphs, 30)
-#         rep_rows_segments1 = repair.repair_columns()
-#         rep_rows_segments2 = repair.repair_rows()
-#
-#         # for seg in segments:
-#         #     print('x:{0} y:{1} x1:{2} y2:{3} - {4}'.format(str(seg.pos_x), str(seg.pos_y), str(seg.lower_x), str(seg.lower_y), seg.type))
-#
-#
-#         #segmenter.font_statistics()
-#         #segments = segmenter.find_lines()
-#         displaySegments(segments)
-#
-#
-
