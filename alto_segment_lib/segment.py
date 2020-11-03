@@ -29,6 +29,7 @@ class Segment:
 
     def between_x_coords(self, coord: int, margin: float = 0.0):
         return (self.pos_x*(1-margin)) <= coord <= (self.lower_x*(1+margin))
+
     def __init__(self, type_, top_x, top_y, bot_x, bot_y):
         self.type = type_
         self.pos_x = top_x
@@ -38,7 +39,6 @@ class Segment:
 
     def __init__(self):
         pass
-
 
     def between_y_coords(self, coord: int, margin: int = 0):
         return (self.pos_y*(1-margin)) <= coord <= (self.lower_y*(1+margin))
@@ -71,6 +71,7 @@ class Line:
 
     def height(self):
         return self.lower_y - self.pos_y
+
     def __init__(self, x: int, y: int, x2: int, y2: int):
         self.pos_x = x
         self.pos_y = y

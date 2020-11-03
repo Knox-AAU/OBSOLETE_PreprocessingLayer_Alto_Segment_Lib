@@ -67,7 +67,7 @@ if __name__ == '__main__':
     segments_para = [segment for segment in segments if segment.type == "paragraph"]
     segments_headers = [segment for segment in segments if segment.type == "headline"]
 
-    segmentOrder = SegmentOrdering(File_path, File_name)
+    segmentOrder = SegmentOrdering(base_path, filename)
     segmentsInArticles = segmentOrder.distributeSegmentsIntoArticles(segments_headers, segments_para)
 
     if False:
