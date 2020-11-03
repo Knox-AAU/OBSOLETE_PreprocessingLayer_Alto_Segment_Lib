@@ -4,18 +4,9 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 from PIL import Image
 
-base_path = "/home/tlorentzen/Desktop/Example/1986/"
-
-#filepath = "/Users/tlorentzen/Desktop/Example/1942/aalborgstiftstidende-1942-01-02-01-0028B"
-#filepath = "/home/tlorentzen/Desktop/Example/2006/nordjyskestiftstidende-2006-10-10-01-0829A"
-#filepath = "/Users/tlorentzen/Desktop/Example/1986/aalborgstiftstidende-1986-10-13-01-0345A"
-
-#filename = "aalborgstiftstidende-1942-01-02-01-0028B"
-filename = "aalborgstiftstidende-1986-10-13-01-0345A"
-#filename = "nordjyskestiftstidende-2006-10-10-01-0829A"
-#filename = "aalborgstiftstidende-1986-10-13-01-0345A"
-
-filetype = ".tiff"
+base_path = "/Users/Alexi/Desktop/KnoxFiler/4/"
+filename = "aalborgstiftstidende-1942-01-02-01-0028B"
+filetype = ".jp2"
 filepath = base_path+filename
 
 print(filepath)
