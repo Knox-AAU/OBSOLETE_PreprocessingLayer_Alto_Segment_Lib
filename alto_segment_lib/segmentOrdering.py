@@ -68,8 +68,8 @@ class SegmentOrdering:
 
         # Find the right line
         for line in all_lines:
-            if line.y1 > 500 or line.y2 > 500 or line.y1 < 50:
-                continue
+            #if line.y1 > 500 or line.y2 > 500 or line.y1 < 50:
+             #   continue
             lines.append(line)
 
         # Find the top three lines
@@ -198,7 +198,7 @@ class SegmentOrdering:
 
         for line in lines:
             plt.gca().add_patch(
-                ConnectionPatch((line.y1, line.y1), (line.x2, line.y2), coordsA='data',linewidth=0.3, edgecolor='r', facecolor='none'))
+                ConnectionPatch((line.x1, line.y1), (line.x2, line.y2), coordsA='data',linewidth=0.3, edgecolor='r', facecolor='none'))
 
         plt.savefig(self.File_path + "Lines.png", dpi=1000, bbox_inches='tight')
 
