@@ -67,4 +67,4 @@ if __name__ == '__main__':
 
     segmentOrder = SegmentOrdering(base_path, filename)
     segmentsInArticles = segmentOrder.distribute_segments_into_articles(segments_headers, segments_para)
-    displaySegments(segments)
+    display_segments(segments)
