@@ -33,7 +33,9 @@ class LineExtractor:
     def extract_lines_via_path(self, image_path):
         image = cv2.imread(image_path, cv2.CV_8UC1)
         lines = self.extract_lines_via_image(image)
-        return lines
+        extended_lines = self.extend_lines_vertically(lines, image)
+        #self.show_lines_on_image(image, lines)
+        return extended_lines
 
     def extract_lines_via_image(self, image):
         enhanced_image = self.enhance_lines(image)
@@ -106,3 +108,13 @@ class LineExtractor:
         cv2.namedWindow("image", cv2.WINDOW_NORMAL)
         cv2.imshow("image", lines_edges)
         cv2.waitKey(0)
+
+    def extend_lines_vertically(self, lines, image):
+        horizontal_size, vertical_size = image.shape
+
+        for line in lines:
+            if line.y2 > vertical_size - 200:
+                line.y2 = line.y2 + 200
+
+        return lines
+

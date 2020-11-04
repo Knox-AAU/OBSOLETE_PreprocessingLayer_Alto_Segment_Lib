@@ -4,9 +4,11 @@ import enum
 from alto_segment_lib.segment import Segment
 from alto_segment_lib.segment import Line
 
+
 class FindType(enum.Enum):
     Paragraph = 1
     Header = 2
+
 
 class Segmenter:
     __path: str
@@ -62,7 +64,7 @@ class Segmenter:
     def find_paragraphs(self):
         return self.__find_segs_with_type(FindType.Paragraph)
 
-    def __find_segs_with_type(self, SegmentsToExtract : FindType):
+    def __find_segs_with_type(self, segments_to_extract : FindType):
         segments: list = []
         lines: list = []
 
@@ -73,10 +75,10 @@ class Segmenter:
             text_lines_coord = self.find_lines_in_segment(text_block)
             coordinate = None
 
-            if SegmentsToExtract == FindType.Header:
+            if segments_to_extract == FindType.Header:
                 if text_lines[0].attributes['STYLEREFS'].value in self.__para_fonts:
                     coordinate = self.__extract_coordinates(text_block)
-            elif SegmentsToExtract == FindType.Paragraph:
+            elif segments_to_extract == FindType.Paragraph:
                 if text_lines[0].attributes['STYLEREFS'].value not in self.__para_fonts:
                     coordinate = self.__extract_coordinates(text_block)
 
