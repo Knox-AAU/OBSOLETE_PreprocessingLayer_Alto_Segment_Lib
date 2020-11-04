@@ -15,6 +15,26 @@ filename: str
 filepath: str
 filetype = ".jp2"
 
+
+def displaySegments(segments):
+    #plt.imshow(Image.open("/home/tlorentzen/Desktop/Example/1942/aalborgstiftstidende-1942-01-02-01-0028B.tiff"))
+    plt.imshow(Image.open(filepath+filetype))
+    plt.rcParams.update({'font.size': 3, 'text.color': "red", 'axes.labelcolor': "red"})
+
+    counter = 1
+
+    # Add the patch to the Axes
+    #plt.hlines(100, 100, 100+repair.get_median_column_width(), colors='k', linestyles='solid', label='Median paragraph width')
+
+    for segment in segments:
+        plt.gca().add_patch(Rectangle((segment.pos_x, segment.pos_y), (segment.lower_x-segment.pos_x), (segment.lower_y-segment.pos_y), linewidth=0.3, edgecolor='r', facecolor='none'))
+        # plt.text(segment.pos_x+25, segment.pos_y+30, "["+str(counter)+"]", horizontalalignment='left', verticalalignment='top')
+        # plt.text(seg[0]+45, seg[1] + 200, str((seg[2]-seg[0])), horizontalalignment='left', verticalalignment='top')
+        counter += 1
+
+    plt.savefig(filepath+"-out.png", dpi=300, bbox_inches='tight')
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # defines input and output path
@@ -58,21 +78,4 @@ if __name__ == '__main__':
 
     segmentOrder = SegmentOrdering(base_path, filename)
     segmentsInArticles = segmentOrder.distributeSegmentsIntoArticles(segments_headers, segments_para)
-
-def displaySegments(segments):
-    #plt.imshow(Image.open("/home/tlorentzen/Desktop/Example/1942/aalborgstiftstidende-1942-01-02-01-0028B.tiff"))
-    plt.imshow(Image.open(filepath+filetype))
-    plt.rcParams.update({'font.size': 3, 'text.color': "red", 'axes.labelcolor': "red"})
-
-    counter = 1
-
-    # Add the patch to the Axes
-    #plt.hlines(100, 100, 100+repair.get_median_column_width(), colors='k', linestyles='solid', label='Median paragraph width')
-
-    for segment in segments:
-        plt.gca().add_patch(Rectangle((segment.pos_x, segment.pos_y), (segment.lower_x-segment.pos_x), (segment.lower_y-segment.pos_y), linewidth=0.3, edgecolor='r', facecolor='none'))
-        # plt.text(segment.pos_x+25, segment.pos_y+30, "["+str(counter)+"]", horizontalalignment='left', verticalalignment='top')
-        # plt.text(seg[0]+45, seg[1] + 200, str((seg[2]-seg[0])), horizontalalignment='left', verticalalignment='top')
-        counter += 1
-
-    plt.savefig(filepath+"-out.png", dpi=300, bbox_inches='tight')
+    displaySegments(segments)
