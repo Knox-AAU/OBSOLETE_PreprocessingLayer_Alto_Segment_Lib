@@ -167,10 +167,10 @@ class Segmenter:
 
     def make_segment_by_coordinates(self, coordinates: list):
         segment = Segment()
-        segment.pos_x = coordinates[0]
-        segment.pos_y = coordinates[1]
-        segment.lower_x = coordinates[2]
-        segment.lower_y = coordinates[3]
+        segment.x1 = coordinates[0]
+        segment.y1 = coordinates[1]
+        segment.x2 = coordinates[2]
+        segment.y2 = coordinates[3]
         return segment
 
     def make_line_by_coordinates(self, coordinates: list):

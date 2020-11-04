@@ -57,7 +57,7 @@ class SegmentOrdering:
         page_header_ends_at = 300
         segments = [i for i in segments if i]
         for segment in segments:
-            if segment.pos_y < page_header_ends_at:
+            if segment.y1 < page_header_ends_at:
                 segments.remove(segment)
         return segments
 
@@ -105,7 +105,7 @@ class SegmentOrdering:
         :param header: Header to check
         :return: The headers y coordinate
         """
-        return header.pos_y
+        return header.y1
 
     def __match_headers_with_subheaders(self, headers, median_line_width: float):
         """ Finds header, subheader pairs and returns them
@@ -148,13 +148,13 @@ class SegmentOrdering:
         :param median_line_width: Normal paragraph width
         :return: True if they are a pair, false if aren't
         """
-        header_width = header.lower_x - header.pos_x
-        subheader_height = possible_subheader.lower_y - possible_subheader.pos_y
+        header_width = header.x2 - header.x1
+        subheader_height = possible_subheader.y2 - possible_subheader.y1
 
-        if (-20 <= possible_subheader.pos_y - header.lower_y < 200 and -header_width <= header.pos_x - possible_subheader.pos_x <= header_width) \
-                or (header.lower_x - header.pos_x < median_line_width * 0.6
-                    and -subheader_height <= possible_subheader.pos_y - header.lower_y < subheader_height and -50 <= header.lower_x -
-                    possible_subheader.pos_x <= header_width):
+        if (-20 <= possible_subheader.y1 - header.y2 < 200 and -header_width <= header.x1 - possible_subheader.x1 <= header_width) \
+                or (header.x2 - header.x1 < median_line_width * 0.6
+                    and -subheader_height <= possible_subheader.y1 - header.y2 < subheader_height and -50 <= header.x2 -
+                    possible_subheader.x1 <= header_width):
             return True
         else:
             return False
@@ -166,7 +166,7 @@ class SegmentOrdering:
         """
         all_para = []
         for segment in segments:
-            all_para.append(segment.lower_x - segment.pos_x)
+            all_para.append(segment.x2 - segment.x1)
         return float(statistics.median(all_para))
 
     def __display_header_pairs(self, headers_with_subheaders: list):
@@ -179,11 +179,11 @@ class SegmentOrdering:
         for pair in headers_with_subheaders:
             for elm in pair:
                 plt.gca().add_patch(
-                    Rectangle((elm.pos_x, elm.pos_y), (elm.lower_x - elm.pos_x), (elm.lower_y - elm.pos_y), linewidth=0.3, edgecolor='b',
+                    Rectangle((elm.x1, elm.y1), (elm.x2 - elm.x1), (elm.y2 - elm.y1), linewidth=0.3, edgecolor='b',
                               facecolor='none'))
             if len(pair) > 1:
                 plt.gca().add_patch(
-                    Rectangle((pair[0].pos_x, pair[0].pos_y), (pair[1].lower_x - pair[0].pos_x), (pair[1].lower_y - pair[0].pos_y),
+                    Rectangle((pair[0].x1, pair[0].y1), (pair[1].x2 - pair[0].x1), (pair[1].y2 - pair[0].y1),
                               linewidth=0.3, edgecolor='r',
                               facecolor='none'))
 
