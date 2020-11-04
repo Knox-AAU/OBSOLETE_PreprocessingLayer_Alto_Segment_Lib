@@ -105,7 +105,7 @@ class Segmenter:
             for text_line in text_lines:
                 text_line_coordinates = self.__extract_coordinates(text_line)
                 line = self.make_line_by_coordinates(text_line_coordinates)
-                # segment.lines.append(line)
+                segment.lines.append(line)
 
             segments.append(segment)
 
