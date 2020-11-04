@@ -25,7 +25,7 @@ class SegmentOrdering:
         self.File_path = file_path
         self.File_name = file_name
 
-    def distributeSegmentsIntoArticles(self, headers_org, paragraphs):
+    def distribute_segments_into_articles(self, headers_org, paragraphs):
         """ Distributes the segments into articles
         :param headers_org: List of header segments
         :param paragraphs: List of paragraph segments
@@ -37,18 +37,18 @@ class SegmentOrdering:
 
         # Remove Date, paper name, page number
         self.__y_cord_of_top_vertical_line()
-        headers = self.__removeDatePapernamePagenumber(headers)
-        paragraphs = self.__removeDatePapernamePagenumber(paragraphs)
+        headers = self.__remove_date_papername_pagenumber(headers)
+        paragraphs = self.__remove_date_papername_pagenumber(paragraphs)
 
         # Match headers with subheaders
-        headers_with_subheaders = self.__matchHeadersWithSubheaders(headers, self.Paragraph_normal_width)
+        headers_with_subheaders = self.__match_headers_with_subheaders(headers, self.Paragraph_normal_width)
         # self.__displayHeaderPairs(headers_with_subheaders)
 
         # Match paragraphs with each other in order per article
         # articles: list = [[]]       # A list of articles with their paragraphs in an ordered list, and their header(s) as the first (and second) element(s)
         # articles = self.__matchParagraphsWithHeaders(headers_with_subheaders, paragraphs)
 
-    def __removeDatePapernamePagenumber(self, segments: list):
+    def __remove_date_papername_pagenumber(self, segments: list):
         """ Removes the date paper name and page number from the list of segments. These are always found at the top of
         the page, and is therefore found from the position. This should maybe be done by the page header line.
         :param segments: A list of segments
@@ -74,7 +74,7 @@ class SegmentOrdering:
 
         # Find the top three lines
         average_y = self.__find_top_three_lines(lines)
-        self.__displayLines(lines)
+        self.__display_lines(lines)
 
     def __sort_by_y(self, line: Line):
         return line.y1
@@ -107,7 +107,7 @@ class SegmentOrdering:
         """
         return header.pos_y
 
-    def __matchHeadersWithSubheaders(self, headers, median_line_width: float):
+    def __match_headers_with_subheaders(self, headers, median_line_width: float):
         """ Finds header, subheader pairs and returns them
         :param headers: Header pairs
         :param median_line_width: Normal paragraph width
@@ -169,7 +169,7 @@ class SegmentOrdering:
             all_para.append(segment.lower_x - segment.pos_x)
         return float(statistics.median(all_para))
 
-    def __displayHeaderPairs(self, headers_with_subheaders: list):
+    def __display_header_pairs(self, headers_with_subheaders: list):
         """ Outputs a picture with headers and subheaders marked
         :param headers_with_subheaders: A list of pairs and non pairs of headers
         """
@@ -189,7 +189,7 @@ class SegmentOrdering:
 
         plt.savefig(self.File_path + "Pairs75.png", dpi=1000, bbox_inches='tight')
 
-    def __displayLines(self, lines: list):
+    def __display_lines(self, lines: list):
         """ Outputs a picture with headers and subheaders marked
         :param headers_with_subheaders: A list of pairs and non pairs of headers
         """
@@ -202,6 +202,6 @@ class SegmentOrdering:
 
         plt.savefig(self.File_path + "Lines.png", dpi=1000, bbox_inches='tight')
 
-    def __matchParagraphsWithHeaders(self, headers_with_subheaders, paragraphs):
+    def __match_paragraphs_with_headers(self, headers_with_subheaders, paragraphs):
         pass
 

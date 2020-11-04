@@ -8,8 +8,6 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 from PIL import Image
 
-# base_path = "/Users/Alexi/Desktop/KnoxFiler/4/"
-# filename = "aalborgstiftstidende-1942-01-02-01-0028B"
 base_path: str
 filename: str
 filepath: str
@@ -63,19 +61,10 @@ if __name__ == '__main__':
     # for seg in paragraphs:
     #    print('x:{0} y:{1} x1:{2} y2:{3} - {4}'.format(str(seg.pos_x), str(seg.pos_y), str(seg.lower_x), str(seg.lower_y), seg.type))
 
-    segments_para = [segment for segment in segments if segment.type == "paragraph"]
-    segments_headers = [segment for segment in segments if segment.type == "headline"]
-    #
-    segmentOrder = SegmentOrdering(base_path, filename)
-    segmentsInArticles = segmentOrder.distributeSegmentsIntoArticles(segments_headers, segments_para)
-
-    # for seg in paragraphs:
-    #    print('x:{0} y:{1} x1:{2} y2:{3} - {4}'.format(str(seg.pos_x), str(seg.pos_y), str(seg.lower_x), str(seg.lower_y), seg.type))
-
     segments = segmenter.extract_segments()
     segments_para = [segment for segment in segments if segment.type == "paragraph"]
     segments_headers = [segment for segment in segments if segment.type == "headline"]
 
     segmentOrder = SegmentOrdering(base_path, filename)
-    segmentsInArticles = segmentOrder.distributeSegmentsIntoArticles(segments_headers, segments_para)
-    display_segments(segments)
+    segmentsInArticles = segmentOrder.distribute_segments_into_articles(segments_headers, segments_para)
+    displaySegments(segments)
