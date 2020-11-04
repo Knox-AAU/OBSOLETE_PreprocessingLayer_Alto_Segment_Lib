@@ -3,7 +3,7 @@ import argparse
 from alto_segment_lib.repair_segments import RepairSegments
 from alto_segment_lib.alto_segment_extractor import AltoSegmentExtractor
 from alto_segment_lib.segmenter import Segmenter, FindType
-from alto_segment_lib.segmentOrdering import SegmentOrdering
+from alto_segment_lib.segment_ordering import SegmentOrdering
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 from PIL import Image
