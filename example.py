@@ -14,7 +14,7 @@ filepath: str
 filetype = ".jp2"
 
 
-def display_segments(display_segments):
+def display_segments(segments_for_display):
     #plt.imshow(Image.open("/home/tlorentzen/Desktop/Example/1942/aalborgstiftstidende-1942-01-02-01-0028B.tiff"))
     plt.imshow(Image.open(filepath+filetype))
     plt.rcParams.update({'font.size': 3, 'text.color': "red", 'axes.labelcolor': "red"})
@@ -24,7 +24,7 @@ def display_segments(display_segments):
     # Add the patch to the Axes
     #plt.hlines(100, 100, 100+repair.get_median_column_width(), colors='k', linestyles='solid', label='Median paragraph width')
 
-    for segment in display_segments:
+    for segment in segments_for_display:
         plt.gca().add_patch(Rectangle((segment.pos_x, segment.pos_y), (segment.lower_x-segment.pos_x), (segment.lower_y-segment.pos_y), linewidth=0.3, edgecolor='r', facecolor='none'))
         # plt.text(segment.pos_x+25, segment.pos_y+30, "["+str(counter)+"]", horizontalalignment='left', verticalalignment='top')
         # plt.text(seg[0]+45, seg[1] + 200, str((seg[2]-seg[0])), horizontalalignment='left', verticalalignment='top')
@@ -65,6 +65,6 @@ if __name__ == '__main__':
     segments_para = [segment for segment in segments if segment.type == "paragraph"]
     segments_headers = [segment for segment in segments if segment.type == "headline"]
 
-    segmentOrder = SegmentOrdering(base_path, filename)
-    segmentsInArticles = segmentOrder.distribute_segments_into_articles(segments_headers, segments_para)
-    displaySegments(segments)
+    segment_order = SegmentOrdering(base_path, filename)
+    segments_in_articles = segment_order.distribute_segments_into_articles(segments_headers, segments_para)
+    display_segments(segments)
