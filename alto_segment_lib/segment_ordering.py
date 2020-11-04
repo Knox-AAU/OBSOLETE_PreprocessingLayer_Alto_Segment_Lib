@@ -204,4 +204,3 @@ class SegmentOrdering:
 
     def __match_paragraphs_with_headers(self, headers_with_subheaders, paragraphs):
         pass
-

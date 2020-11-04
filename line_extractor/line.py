@@ -22,3 +22,9 @@ class Line:
 
     def __eq__(self,other):
         return self.x1 == other.x1 and self.y1 == other.y1 and self.x2 == other.x2 and self.y2 == other.y2
+
+    def is_vertical(self) -> bool:
+            orientation = self.get_orientation()
+            # if horizontal
+            if 45 < orientation < 135:
+                return true

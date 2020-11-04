@@ -117,4 +117,3 @@ class LineExtractor:
                 line.y2 = line.y2 + 200
 
         return lines
-
