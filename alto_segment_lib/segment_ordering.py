@@ -36,7 +36,7 @@ class SegmentOrdering:
             headers.append(header)
 
         # Remove Date, paper name, page number
-        self.__y_cord_of_top_vertical_line()
+        # self.__y_cord_of_top_vertical_line()
         headers = self.__remove_date_papername_pagenumber(headers)
         paragraphs = self.__remove_date_papername_pagenumber(paragraphs)
 

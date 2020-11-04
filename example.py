@@ -12,6 +12,7 @@ base_path: str
 filename: str
 filepath: str
 filetype = ".jp2"
+# /Users/Alexi/Desktop/KnoxFiler/4/ aalborgstiftstidende-1942-01-02-01-0028B
 
 
 def display_segments(segments_for_display):
@@ -30,7 +31,7 @@ def display_segments(segments_for_display):
         # plt.text(seg[0]+45, seg[1] + 200, str((seg[2]-seg[0])), horizontalalignment='left', verticalalignment='top')
         counter += 1
 
-    plt.savefig(filepath+"-out.png", dpi=300, bbox_inches='tight')
+    plt.savefig(filepath+"-out4.png", dpi=300, bbox_inches='tight')
 
 
 if __name__ == '__main__':
@@ -57,14 +58,16 @@ if __name__ == '__main__':
     repair = RepairSegments(paragraphs, 30)
     rep_rows_segments1 = repair.repair_columns()
     rep_rows_segments2 = repair.repair_rows()
+    paragraphs.clear()
+    segments_para = rep_rows_segments2
 
     # for seg in paragraphs:
     #    print('x:{0} y:{1} x1:{2} y2:{3} - {4}'.format(str(seg.pos_x), str(seg.pos_y), str(seg.lower_x), str(seg.lower_y), seg.type))
 
-    segments = segmenter.extract_segments()
-    segments_para = [segment for segment in segments if segment.type == "paragraph"]
+    # segments = segmenter.extract_segments()
+    # segments_para = [segment for segment in segments if segment.type == "paragraph"]
     segments_headers = [segment for segment in segments if segment.type == "headline"]
 
     segment_order = SegmentOrdering(base_path, filename)
     segments_in_articles = segment_order.distribute_segments_into_articles(segments_headers, segments_para)
-    display_segments(segments)
+    display_segments(segments_para)
