@@ -137,16 +137,16 @@ class HoughBundler:
         return merged_lines_all
 
     def split_lines_into_horizontal_and_vertical(self, lines):
-        lines_x = []
-        lines_y = []
+        lines_vertical = []
+        lines_horizontal = []
         # for every line of cv2.HoughLinesP()
         for line_i in lines:
             orientation = line_i.get_orientation()
             # if horizontal
             if 45 < orientation < 135:
-                lines_x.append(line_i)
+                lines_vertical.append(line_i)
             else:
-                lines_y.append(line_i)
-        lines_y = sorted(lines_y, key=lambda line: line.y1)
-        lines_x = sorted(lines_x, key=lambda line: line.x1)
-        return lines_x, lines_y
+                lines_horizontal.append(line_i)
+        lines_horizontal = sorted(lines_y, key=lambda line: line.y1)
+        lines_vertical = sorted(lines_x, key=lambda line: line.x1)
+        return lines_vertical, lines_horizontal
