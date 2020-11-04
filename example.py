@@ -49,6 +49,16 @@ if __name__ == '__main__':
     segmentOrder = SegmentOrdering(base_path, filename)
     segmentsInArticles = segmentOrder.distributeSegmentsIntoArticles(segments_headers, segments_para)
 
+    # for seg in paragraphs:
+    #    print('x:{0} y:{1} x1:{2} y2:{3} - {4}'.format(str(seg.pos_x), str(seg.pos_y), str(seg.lower_x), str(seg.lower_y), seg.type))
+
+    segments = segmenter.extract_segments()
+    segments_para = [segment for segment in segments if segment.type == "paragraph"]
+    segments_headers = [segment for segment in segments if segment.type == "headline"]
+
+    segmentOrder = SegmentOrdering(base_path, filename)
+    segmentsInArticles = segmentOrder.distributeSegmentsIntoArticles(segments_headers, segments_para)
+
 def displaySegments(segments):
     #plt.imshow(Image.open("/home/tlorentzen/Desktop/Example/1942/aalborgstiftstidende-1942-01-02-01-0028B.tiff"))
     plt.imshow(Image.open(filepath+filetype))
