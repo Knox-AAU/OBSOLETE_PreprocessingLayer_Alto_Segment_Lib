@@ -1,4 +1,5 @@
 from alto_segment_lib.segment import Segment
+from line_extractor.extractor import LineExtractor
 import statistics
 
 
@@ -45,7 +46,7 @@ class RepairSegments:
                 coords = [segment.pos_x + (cur_seg_width / 2) + 5, segment.pos_y, segment.lower_x + (cur_seg_width / 2), segment.lower_y]
                 add_segment(self.__segments, coords, [], segment.type)
 
-        return self.__segments
+        return self.__segments.copy()
 
     def repair_rows(self, range_span: int = 50):
         return_segments = self.__segments.copy()
@@ -136,6 +137,7 @@ class RepairSegments:
 
         return_segments.extend(self.__new_segments)
         return return_segments
+        return return_segments.copy()
 
     def get_median_column_width(self):
         return self.__median_paragraph_width
