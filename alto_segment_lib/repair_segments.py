@@ -11,18 +11,13 @@ def add_segment(segments: list, coordinates: list, lines, seg_type: str):
 
 
 class RepairSegments:
-    __segments: list
-    __new_segments: list = []
-    __lines: list = []
-    __median_paragraph_width: float
-    __threshold: int
 
     def __init__(self, segments, lines, threshold: int = 10):
         self.__segments = segments
         self.__threshold = threshold
         self.__lines = lines
         self.__new_segments = []
-        self.__median_paragraph_width
+        self.__median_paragraph_width = 0
         self.__analyze_coordinates()
 
     def __analyze_coordinates(self):
@@ -36,28 +31,37 @@ class RepairSegments:
         min_width = self.__median_paragraph_width - self.__threshold
         max_width = self.__median_paragraph_width + self.__threshold
 
-        if seg_width > max_width and does_line_overlap_segment(segment):
+        if seg_width > max_width and self.does_line_overlap_segment(segment):
             return True
         return False
 
     def does_line_overlap_segment(self, segment):
         for line in self.__lines:
-            #xdiff = (line1[0][0] - line1[1][0], line2[0][0] - line2[1][0])
-            xdiff = (line.x1 - line.x2, segment.x1 - segment.x2)
-            #ydiff = (line1[0][1] - line1[1][1], line2[0][1] - line2[1][1])
-            ydiff = (line.y1 - line.y2, segment.y1 - segment.y2)
+            line.x1 = 4
+            line.y1 = 2
+            line.x2 = 10
+            line.y2 = 2
 
-            def det(a, b):
-                return a[0] * b[1] - a[1] * b[0]
+            segment.x1 = 1
+            segment.y1 = 1
+            segment.x2 = 5
+            segment.y2 = 4
 
-            div = det(xdiff, ydiff)
-            if div == 0:
-               raise Exception('lines do not intersect')
 
-            d = (det(*line1), det(*line2))
-            x = det(d, xdiff) / div
-            y = det(d, ydiff) / div
-            return x, y
+            if line.is_horizontal():
+                if segment.y1 < line.y1 < segment.y2:
+                    if line.x1 < segment.x1 < line.x2:
+                        return True
+                    if line.x1 < segment.x2 < line.x2:
+                        return True
+            else:
+                if segment.x1 < line.x1 < segment.x2:
+                    if line.y1 < segment.y1 < line.y2:
+                        return True
+                    if line.y1 < segment.y2 < line.y2:
+                        return True
+
+        return False
 
     def repair_columns(self):
         for segment in self.__segments:

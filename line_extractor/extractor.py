@@ -33,8 +33,9 @@ class LineExtractor:
     def extract_lines_via_path(self, image_path):
         image = cv2.imread(image_path, cv2.CV_8UC1)
         lines = self.extract_lines_via_image(image)
-        extended_lines = self.extend_lines_vertically(lines, image)
-        #self.show_lines_on_image(image, lines)
+        corrected_lines = self.correct_lines(lines)
+        extended_lines = self.extend_lines_vertically(corrected_lines, image)
+        self.show_lines_on_image(image, extended_lines)
         return extended_lines
 
     def extract_lines_via_image(self, image):
@@ -105,6 +106,7 @@ class LineExtractor:
 
         lines_edges = cv2.addWeighted(image_in_color, 0.5, line_image, 1, 0)
 
+        cv2.imwrite("corrected_lines.png", lines_edges)
         cv2.namedWindow("image", cv2.WINDOW_NORMAL)
         cv2.imshow("image", lines_edges)
         cv2.waitKey(0)
@@ -114,6 +116,37 @@ class LineExtractor:
 
         for line in lines:
             if line.y2 > vertical_size - 200:
-                line.y2 = line.y2 + 200
+                line.y2 = line.y2 + 100
 
         return lines
+
+    def correct_lines(self, lines):
+
+        new_lines = []
+
+        for line in lines:
+            if not line.is_horizontal_or_vertical():
+                continue
+
+            if not line.is_horizontal():
+                if line.x1 < line.x2:
+                    temp = line.x1
+                    line.x1 = line.x2
+                    line.x2 = temp
+
+                median = int((line.x1 - line.x2)/2)
+                line.x1 -= median
+                line.x2 += median
+            else:
+                if line.y1 < line.y2:
+                    temp = line.y1
+                    line.y1 = line.y2
+                    line.y2 = temp
+
+                median = int((line.y1 - line.y2)/2)
+                line.y1 -= median
+                line.y2 += median
+
+            new_lines.append(line)
+
+        return new_lines

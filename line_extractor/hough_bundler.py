@@ -147,6 +147,6 @@ class HoughBundler:
                 lines_vertical.append(line_i)
             else:
                 lines_horizontal.append(line_i)
-        lines_horizontal = sorted(lines_y, key=lambda line: line.y1)
-        lines_vertical = sorted(lines_x, key=lambda line: line.x1)
+        lines_horizontal = sorted(lines_horizontal, key=lambda line: line.y1)
+        lines_vertical = sorted(lines_vertical, key=lambda line: line.x1)
         return lines_vertical, lines_horizontal
