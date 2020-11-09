@@ -12,7 +12,8 @@ import cv2
 
 class LineExtractor:
 
-    def __init__(self):
+    def __init__(self, document_dimensions):
+        self.document_dimensions = document_dimensions
         self.config = configparser.ConfigParser()
         self.config.read('config.ini')
 
@@ -34,9 +35,33 @@ class LineExtractor:
         image = cv2.imread(image_path, cv2.CV_8UC1)
         lines = self.extract_lines_via_image(image)
         corrected_lines = self.correct_lines(lines)
-        extended_lines = self.extend_lines_vertically(corrected_lines, image)
-        self.show_lines_on_image(image, extended_lines)
-        return extended_lines
+        # extended_lines = self.extend_lines_vertically(corrected_lines, image)     # Idk hvad den gør, den gør ihvertfald linjerne skæve
+        # self.show_lines_on_image(image, extended_lines)
+        # self.show_lines_on_image(image, lines)
+        final_lines = self.remove_outline_lines(corrected_lines)
+        return final_lines
+
+    def remove_outline_lines(self, lines):
+        outline_stop = 100
+        max_x = self.document_dimensions[0]
+        max_y = self.document_dimensions[1]
+
+        lines_to_remove = []
+
+        for line in lines:
+            if 0 < line.x1 < outline_stop and 0 < line.x2 < outline_stop or max_x - outline_stop < line.x1 < max_x and max_x - outline_stop < line.x2 < max_x:
+                lines_to_remove.append(line)
+                # lines.remove(line)
+            elif 0 < line.y1 < outline_stop and 0 < line.y2 < outline_stop or max_y - outline_stop < line.y1 < max_y and max_y - outline_stop < line.y2 < max_y:
+                lines_to_remove.append(line)
+                # lines.remove(line)
+
+        lines_to_remove.reverse()
+
+        for line in lines_to_remove:
+            lines.remove(line)
+
+        return lines
 
     def extract_lines_via_image(self, image):
         enhanced_image = self.enhance_lines(image)
@@ -150,3 +175,4 @@ class LineExtractor:
             new_lines.append(line)
 
         return new_lines
+

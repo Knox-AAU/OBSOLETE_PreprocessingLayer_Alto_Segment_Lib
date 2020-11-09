@@ -3,6 +3,7 @@ import operator
 import enum
 from alto_segment_lib.segment import Segment
 from alto_segment_lib.segment import Line
+import re
 
 
 class FindType(enum.Enum):
@@ -101,6 +102,18 @@ class AltoSegmentExtractor:
                 segments.append(coordinate)
 
         return segments
+
+    def extract_document_dimensions(self):
+        xml_element = self.__xmldoc.getElementsByTagName('processingStepSettings')
+        document_data_str = xml_element[0].firstChild.data
+
+        height_str = re.findall(r"height:\d+", document_data_str)
+        width_str = re.findall(r"width:\d+", document_data_str)
+
+        height = int(re.findall(r"\d+", height_str[0])[0])
+        width = int(re.findall(r"\d+", width_str[0])[0])
+
+        return width, height
 
     def extract_segments(self):
         segments = []

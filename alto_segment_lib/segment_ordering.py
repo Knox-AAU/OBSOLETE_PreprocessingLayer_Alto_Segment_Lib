@@ -74,7 +74,7 @@ class SegmentOrdering:
 
         # Find the top three lines
         average_y = self.__find_top_three_lines(lines)
-        self.__display_lines(lines)
+        self.display_lines(lines)
 
     def __sort_by_y(self, line: Line):
         return line.y1
@@ -189,7 +189,7 @@ class SegmentOrdering:
 
         plt.savefig(self.File_path + "Pairs75.png", dpi=1000, bbox_inches='tight')
 
-    def __display_lines(self, lines: list):
+    def display_lines(self, lines):
         """ Outputs a picture with headers and subheaders marked
         :param headers_with_subheaders: A list of pairs and non pairs of headers
         """
@@ -199,7 +199,6 @@ class SegmentOrdering:
         for line in lines:
             plt.gca().add_patch(
                 ConnectionPatch((line.x1, line.y1), (line.x2, line.y2), coordsA='data',linewidth=0.3, edgecolor='r', facecolor='none'))
-
         plt.savefig(self.File_path + "Lines.png", dpi=1000, bbox_inches='tight')
 
     def __match_paragraphs_with_headers(self, headers_with_subheaders, paragraphs):

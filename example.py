@@ -4,10 +4,11 @@ import line_extractor
 from alto_segment_lib.repair_segments import RepairSegments
 from alto_segment_lib.alto_segment_extractor import AltoSegmentExtractor
 from alto_segment_lib.segmenter import Segmenter, FindType
-from alto_segment_lib.segment_ordering import SegmentOrdering
 import matplotlib.pyplot as plt
+from alto_segment_lib.segment_ordering import SegmentOrdering
 from matplotlib.patches import Rectangle
 from PIL import Image
+from matplotlib.patches import ConnectionPatch
 
 from line_extractor.extractor import LineExtractor
 
@@ -56,14 +57,20 @@ if __name__ == '__main__':
     segments = segmenter.extract_segments()
 
     # print("Repair segments")
+    # Extract document dimensions
+    dimensions = segmenter.extract_document_dimensions()
+
+
 
     paragraphs = [segment for segment in segments if segment.type == "paragraph"]
-    lines = LineExtractor().extract_lines_via_path(filepath + ".jp2")
+    lines = LineExtractor(dimensions).extract_lines_via_path(filepath + ".jp2")
     repair = RepairSegments(paragraphs, lines, 30)
     rep_rows_segments1 = repair.repair_columns()
     rep_rows_segments2 = repair.repair_rows()
     paragraphs.clear()
     segments_para = rep_rows_segments2
+
+
 
     # for seg in paragraphs:
     #    print('x:{0} y:{1} x1:{2} y2:{3} - {4}'.format(str(seg.x1), str(seg.y1), str(seg.x2), str(seg.y2), seg.type))
@@ -74,4 +81,7 @@ if __name__ == '__main__':
 
     segment_order = SegmentOrdering(base_path, filename)
     segments_in_articles = segment_order.distribute_segments_into_articles(segments_headers, segments_para)
-    display_segments(segments_para)
+    # display_segments(segments_para)
+
+    # Display lines
+    segment_order.display_lines(lines)

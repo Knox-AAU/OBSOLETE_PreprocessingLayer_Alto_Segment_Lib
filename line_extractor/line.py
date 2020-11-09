@@ -22,7 +22,7 @@ class Line:
         orientation = math.atan2(abs((self.x1 - self.x2)), abs((self.y1 - self.y2)))
         return math.degrees(orientation)
 
-    def __eq__(self,other):
+    def __eq__(self, other):
         return self.x1 == other.x1 and self.y1 == other.y1 and self.x2 == other.x2 and self.y2 == other.y2
 
     def is_horizontal(self):

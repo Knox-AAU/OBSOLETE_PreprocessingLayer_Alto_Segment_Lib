@@ -50,15 +50,11 @@ class RepairSegments:
 
             if line.is_horizontal():
                 if segment.y1 < line.y1 < segment.y2:
-                    if line.x1 < segment.x1 < line.x2:
-                        return True
-                    if line.x1 < segment.x2 < line.x2:
+                    if line.x1 < segment.x1 < line.x2 or line.x1 < segment.x2 < line.x2:
                         return True
             else:
                 if segment.x1 < line.x1 < segment.x2:
-                    if line.y1 < segment.y1 < line.y2:
-                        return True
-                    if line.y1 < segment.y2 < line.y2:
+                    if line.y1 < segment.y1 < line.y2 or line.y1 < segment.y2 < line.y2:
                         return True
 
         return False
@@ -89,7 +85,7 @@ class RepairSegments:
                     if (segment.x1 - range_span) <= subsegment.x1 <= (segment.x1 + range_span):
 
                         # Checks if both y-coordinates for the subsegment is within the segment: remove the subsegment
-                        if segment.between_y_coords(subsegment.y1) and segment.between_y_coords(subsegment.y2):
+                        if segment.between_y_coords(subsegment.y1) and segment.between_y_coords(subsegment.y2) and subsegment in return_segments:
                             return_segments.remove(subsegment)
                         # Checks if  the  upper y-coordinate for subsegment is within segment: move y-coordinate to
                         # be beside segment
