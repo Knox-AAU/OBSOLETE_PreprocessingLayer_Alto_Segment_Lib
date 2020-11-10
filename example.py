@@ -35,9 +35,9 @@ def display_segments(segments_for_display):
         # plt.text(segment.x1+25, segment.y1+30, "["+str(counter)+"]", horizontalalignment='left', verticalalignment='top')
         # plt.text(seg[0]+45, seg[1] + 200, str((seg[2]-seg[0])), horizontalalignment='left', verticalalignment='top')
         counter += 1
-
+    filename = filepath + "-out.png"
     plt.savefig(filepath+"-out4.png", dpi=600, bbox_inches='tight')
-
+    print("File have been made: '" + filepath + filename + "'")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

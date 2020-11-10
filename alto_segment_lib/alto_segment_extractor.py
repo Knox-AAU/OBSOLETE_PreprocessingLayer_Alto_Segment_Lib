@@ -183,15 +183,15 @@ class AltoSegmentExtractor:
                         stats[key] += 1
 
         most_used_font = max(stats.items(), key=operator.itemgetter(1))[0]
-        print(most_used_font)
+        # print(most_used_font)
 
         for key in fonts:
             if fonts.get(key) <= fonts.get(most_used_font) + 1:
                 self.__para_fonts.append(key)
-                print("Para: " + key)
+                # print("Para: " + key)
             else:
                 self.__head_fonts.append(key)
-                print("Head: " + key)
+                # print("Head: " + key)
 
     def __find_font_sizes(self):
         fonts = {}
