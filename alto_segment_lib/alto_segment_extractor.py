@@ -20,7 +20,7 @@ class AltoSegmentExtractor:
     __dpi: int
     __margin: int
     __xmldoc: minidom
-    __para_fonts = ['TS9']
+    __para_fonts = []
     __head_fonts = []
 
     def __init__(self, alto_path: str = "", dpi: int = 300, margin: int = 0):
@@ -140,24 +140,6 @@ class AltoSegmentExtractor:
         for text_block in text_blocks:
             text_block_coordinates = self.__extract_coordinates(text_block)
             segment = Segment(text_block_coordinates)
-            # text_lines = text_block.getElementsByTagName('TextLine')
-            # text_line_fonts = []
-
-            # for text_line in text_lines:
-            #     text_line_coordinates = self.__extract_coordinates(text_line)
-            #     line = Line(text_line_coordinates)
-            #     if segment.between_x_coords(line.x1 + 10) and segment.between_x_coords(line.x2 - 10):
-            #         text_line_fonts.append(text_line.attributes['STYLEREFS'].value)
-            #         segment.lines.append(line)
-
-            # style = determine_most_frequent_list_element(text_line_fonts)
-
-            # if style in self.__para_fonts:
-            #     segment.type = "paragraph"
-            # elif style in self.__head_fonts:
-            #     segment.type = "headline"
-            # else:
-            #     segment.type = "Unknown"
 
             segments.append(segment)
 
