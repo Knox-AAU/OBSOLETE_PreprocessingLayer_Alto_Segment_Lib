@@ -79,10 +79,11 @@ if __name__ == '__main__':
     #
     # segments = segmenter.extract_segments()
     text_lines = altoExtractor.extract_lines()
-    text_lines = altoExtractor.repair_text_lines(text_lines)
-    display_lines(lists[0], lists[1])
     lists = altoExtractor.group_lines_into_paragraph_headers(text_lines)
-    
+    segments = altoExtractor.combine_lines_into_segments(lists[1])
+    display_segments(segments)
+    #display_lines(lists[0], lists[1])
+
     # print("Repair segments")
     # Extract document dimensions
     #dimensions = segmenter.extract_document_dimensions()

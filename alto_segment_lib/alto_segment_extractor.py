@@ -147,7 +147,6 @@ class AltoSegmentExtractor:
 
             lines.append(line)
 
-        #self.__lines = lines
         return lines
 
     def __extract_coordinates(self, element: minidom):
@@ -195,15 +194,67 @@ class AltoSegmentExtractor:
         return header, paragraph
 
     def combine_lines_into_segments(self, lines):
-        #skal ikke sættes lig med noget her
-        previous_line = lines[0]
         segment = []
-        temp_segment = []
+        x_groups = self.group_same_x(lines)
+        y_groups = self.group_same_y(x_groups)
+
+        for group in y_groups:
+            if len(group) > 0:
+                new_segment = group[0]
+                min_x = min(group, key=lambda line: line.x1)
+                max_x = max(group, key=lambda line: line.x2)
+                min_y = min(group, key=lambda line: line.y1)
+                max_y = max(group, key=lambda line: line.y2)
+                new_segment.x1 = min_x.x1
+                new_segment.y1 = min_y.y1
+                new_segment.x2 = max_x.x2
+                new_segment.y2 = max_y.y2
+                segment.append(new_segment)
+        return segment
+
+    def group_same_x(self, lines):
+        previous_line = None
+        temp = []
+        x_groups = []
+
+        lines = sorted(lines, key=lambda sorted_line: sorted_line.x1)
 
         for line in lines:
-            if line.y1 - previous_line.y2 < 10 and previous_line.x1 - line.x1 < 10:
-                temp_segment.append(line)
-            previous_line = line
+            if previous_line is None:
+                previous_line = line
+                continue
+            if line.x1 - previous_line.x1 < 100:
+                x_diff = line.x1 - previous_line.x1
+                temp.append(line)
+            else:
+                x_groups.append(temp)
+                temp = [line]
+                previous_line = line
+        return x_groups
+
+    def group_same_y(self, x_group):
+        previous_line = None
+        temp = []
+        y_groups = []
+
+        for group in x_group:
+            group = sorted(group, key=lambda sorted_group: sorted_group.y1)
+            previous_line = None
+            for line in group:
+                if previous_line is None:
+                    previous_line = line
+                    temp = [line]
+                    continue
+                if line.y1 - previous_line.y2 < 15:
+                    temp.append(line)
+                else:
+                    y_groups.append(temp)
+                    temp = [line]
+                previous_line = line
+            if len(temp) > 1:
+                y_groups.append(temp)
+                temp = []
+        return y_groups
 
     def __font_statistics(self):
         fonts: dict = self.__find_font_sizes()
