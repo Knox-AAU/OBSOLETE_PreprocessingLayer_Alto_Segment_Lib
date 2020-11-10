@@ -37,8 +37,10 @@ def display_segments(segments_for_display):
         # plt.text(seg[0]+45, seg[1] + 200, str((seg[2]-seg[0])), horizontalalignment='left', verticalalignment='top')
         counter += 1
 
+
     plt.savefig(filepath+"-out.png", dpi=600, bbox_inches='tight')
     plt.gca().clear()
+    print("File has been generated: '" + filename + "-out.png'")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
