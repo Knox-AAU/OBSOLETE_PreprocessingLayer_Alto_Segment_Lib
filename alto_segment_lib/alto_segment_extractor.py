@@ -142,7 +142,7 @@ class AltoSegmentExtractor:
 
         for text_line in text_lines:
             text_line_coordinates = self.__extract_coordinates(text_line)
-            line = Segment(text_line_coordinates)
+            line = Line(text_line_coordinates)
 
             lines.append(line)
 
@@ -206,27 +206,25 @@ class AltoSegmentExtractor:
 
     def repair_text_lines(self, text_lines):
 
-        if self.does_line_intersect_text_line(text_lines):
-            i=0
+        for text_line in text_lines:
+            (does_line_intersect, line) = self.does_line_intersect_text_line(text_line)
+            if does_line_intersect:
+                coords = [line.x1, text_line.y1, text_line.x2, text_line.y2]
+                text_line.x2 = int(line.x1)
+
+                text_lines.append(Line(coords))
 
         return text_lines
 
-
     def does_line_intersect_text_line(self, text_line):
         for line in self.__lines:
-
             # finds 5% of the width and height as a buffer
             width_5_percent = (text_line.x2 - text_line.x1) * 0.05
-            height_5_percent = (text_line.y2 - text_line.y1) * 0.05
             # checks if a line is going through one of the lines of the text_line
             # width/height is a buffer so we dont get false positives due to crooked lines
-            if line.is_horizontal():
-                if text_line.y1 + height_5_percent < line.y1 < text_line.y2 - height_5_percent:
-                    if line.x1 < text_line.x1 < line.x2 or line.x1 < text_line.x2 < line.x2:
-                        return True
-            else:
+            if not line.is_horizontal():
                 if text_line.x1 + width_5_percent < line.x1 < text_line.x2 - width_5_percent:
                     if line.y1 < text_line.y1 < line.y2 or line.y1 < text_line.y2 < line.y2:
-                        return True
+                        return True, line
 
-        return False
+        return False, None
