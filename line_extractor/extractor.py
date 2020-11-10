@@ -32,6 +32,8 @@ class LineExtractor:
 
     def extract_lines_via_path(self, image_path):
         image = cv2.imread(image_path, cv2.CV_8UC1)
+
+
         lines = self.extract_lines_via_image(image)
         corrected_lines = self.correct_lines(lines)
         # extended_lines = self.extend_lines_vertically(corrected_lines, image)     # Idk hvad den gør, den gør ihvertfald linjerne skæve

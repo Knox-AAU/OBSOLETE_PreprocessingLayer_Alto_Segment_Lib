@@ -42,7 +42,7 @@ class SegmentOrdering:
 
         # Match headers with subheaders
         headers_with_subheaders = self.__match_headers_with_subheaders(headers, self.Paragraph_normal_width)
-        # self.__displayHeaderPairs(headers_with_subheaders)
+        #self.__displayHeaderPairs(headers_with_subheaders)
 
         # Match paragraphs with each other in order per article
         # articles: list = [[]]       # A list of articles with their paragraphs in an ordered list, and their header(s) as the first (and second) element(s)

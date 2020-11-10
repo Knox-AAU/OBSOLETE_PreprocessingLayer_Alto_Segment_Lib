@@ -37,23 +37,18 @@ class RepairSegments:
 
     def does_line_overlap_segment(self, segment):
         for line in self.__lines:
-            line.x1 = 4
-            line.y1 = 2
-            line.x2 = 10
-            line.y2 = 2
 
-            segment.x1 = 1
-            segment.y1 = 1
-            segment.x2 = 5
-            segment.y2 = 4
-
-
+            # finds 5% of the width and height as a buffer
+            width_5_procent = (segment.x2 - segment.x1) * 0.05
+            height_5_procent = (segment.y2 - segment.y1) * 0.05
+            # checks if a line is going through one of the lines of the segment
+            # width/height is a buffer so we dont get false positives due to crooked lines
             if line.is_horizontal():
-                if segment.y1 < line.y1 < segment.y2:
+                if segment.y1 + height_5_procent < line.y1 < segment.y2 - height_5_procent:
                     if line.x1 < segment.x1 < line.x2 or line.x1 < segment.x2 < line.x2:
                         return True
             else:
-                if segment.x1 < line.x1 < segment.x2:
+                if segment.x1 + width_5_procent < line.x1 < segment.x2 - width_5_procent:
                     if line.y1 < segment.y1 < line.y2 or line.y1 < segment.y2 < line.y2:
                         return True
 
