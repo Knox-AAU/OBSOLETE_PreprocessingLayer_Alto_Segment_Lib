@@ -22,6 +22,7 @@ filetype = ".jp2"
 
 def display_segments(segments_for_display):
     #plt.imshow(Image.open("/home/tlorentzen/Desktop/Example/1942/aalborgstiftstidende-1942-01-02-01-0028B.tiff"))
+
     plt.imshow(Image.open(filepath+filetype))
     plt.rcParams.update({'font.size': 3, 'text.color': "red", 'axes.labelcolor': "red"})
 
@@ -36,7 +37,8 @@ def display_segments(segments_for_display):
         # plt.text(seg[0]+45, seg[1] + 200, str((seg[2]-seg[0])), horizontalalignment='left', verticalalignment='top')
         counter += 1
 
-    plt.savefig(filepath+"-out4.png", dpi=600, bbox_inches='tight')
+    plt.savefig(filepath+"-out.png", dpi=600, bbox_inches='tight')
+    plt.gca().clear()
 
 
 if __name__ == '__main__':
@@ -54,6 +56,10 @@ if __name__ == '__main__':
     segmenter = AltoSegmentExtractor(filepath + ".alto.xml")
     segmenter.set_dpi(300)
     segmenter.set_margin(0)
+
+        altoExtractor = AltoSegmentExtractor(filepath + ".alto.xml")
+        altoExtractor.set_dpi(300)
+        altoExtractor.set_margin(0)
     #
     # segments = segmenter.extract_segments()
     segments = segmenter.extract_lines()
