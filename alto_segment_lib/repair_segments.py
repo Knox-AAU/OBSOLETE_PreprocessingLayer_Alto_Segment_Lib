@@ -48,7 +48,7 @@ class RepairSegments:
                     if line.x1 < segment.x1 < line.x2 or line.x1 < segment.x2 < line.x2:
                         return True
             else:
-                if segment.x1 + width_5_procent < line.x1 < segment.x2 - width_5_procent:
+                if segment.x1 + width_5_percent < line.x1 < segment.x2 - width_5_percent:
                     if line.y1 < segment.y1 < line.y2 or line.y1 < segment.y2 < line.y2:
                         return True
 
