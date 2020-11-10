@@ -17,6 +17,7 @@ filename: str
 filepath: str
 filetype = ".jp2"
 # /Users/Alexi/Desktop/KnoxFiler/4/ aalborgstiftstidende-1942-01-02-01-0028B
+# /Users/Alexi/Desktop/KnoxFiler/4/ nordjyskestiftstidende-2006-10-10-01-0829A
 
 
 def display_segments(segments_for_display):

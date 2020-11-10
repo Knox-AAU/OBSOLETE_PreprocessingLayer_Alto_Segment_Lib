@@ -40,7 +40,7 @@ class SegmentOrdering:
 
         # Match headers with subheaders
         headers_with_subheaders = self.__match_headers_with_subheaders(headers, self.Paragraph_normal_width)
-        #self.__displayHeaderPairs(headers_with_subheaders)
+        # self.__display_header_pairs(headers_with_subheaders)
 
         # Match paragraphs with each other in order per article
         # articles: list = [[]]       # A list of articles with their paragraphs in an ordered list, and their header(s) as the first (and second) element(s)
@@ -148,10 +148,9 @@ class SegmentOrdering:
         """
         header_width = header.x2 - header.x1
         subheader_height = possible_subheader.y2 - possible_subheader.y1
-
-        if (-20 <= possible_subheader.y1 - header.y2 < 200 and -header_width <= header.x1 - possible_subheader.x1 <= header_width) \
-                or (header.x2 - header.x1 < median_line_width * 0.6
-                    and -subheader_height <= possible_subheader.y1 - header.y2 < subheader_height and -50 <= header.x2 -
+# 116
+        if (-20 <= possible_subheader.y1 - header.y2 < 150 and -header_width <= header.x1 - possible_subheader.x1 <= header_width) \
+                or (header.x2 - header.x1 < median_line_width * 0.6 and -subheader_height <= possible_subheader.y1 - header.y2 < subheader_height and -50 <= header.x2 -
                     possible_subheader.x1 <= header_width):
             return True
         else:
@@ -166,6 +165,7 @@ class SegmentOrdering:
         for segment in segments:
             all_para.append(segment.x2 - segment.x1)
         return float(statistics.median(all_para))
+
 
     def __display_header_pairs(self, headers_with_subheaders: list):
         """ Outputs a picture with headers and subheaders marked
@@ -184,8 +184,9 @@ class SegmentOrdering:
                     Rectangle((pair[0].x1, pair[0].y1), (pair[1].x2 - pair[0].x1), (pair[1].y2 - pair[0].y1),
                               linewidth=0.3, edgecolor='r',
                               facecolor='none'))
-
-        plt.savefig(self.File_path + "Pairs75.png", dpi=1000, bbox_inches='tight')
+        file_name = "Pairs.png"
+        plt.savefig(self.File_path + file_name, dpi=1000, bbox_inches='tight')
+        print("File have been made: '" + self.File_path + file_name + "'")
 
     def display_lines(self, lines):
         """ Outputs a picture with headers and subheaders marked
@@ -197,7 +198,9 @@ class SegmentOrdering:
         for line in lines:
             plt.gca().add_patch(
                 ConnectionPatch((line.x1, line.y1), (line.x2, line.y2), coordsA='data',linewidth=0.3, edgecolor='r', facecolor='none'))
-        plt.savefig(self.File_path + "Lines.png", dpi=1000, bbox_inches='tight')
+        file_name = "Lines.png"
+        plt.savefig(self.File_path + file_name, dpi=1000, bbox_inches='tight')
+        print("File have been made: '" + self.File_path + file_name + "'")
 
     def __match_paragraphs_with_headers(self, headers_with_subheaders, paragraphs):
         pass
