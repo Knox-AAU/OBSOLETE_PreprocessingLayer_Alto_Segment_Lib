@@ -55,21 +55,23 @@ if __name__ == '__main__':
     segmenter.set_dpi(300)
     segmenter.set_margin(0)
     #
-    segments = segmenter.extract_segments()
-
+    # segments = segmenter.extract_segments()
+    segments = segmenter.extract_lines()
+    display_segments(segments)
     # print("Repair segments")
     # Extract document dimensions
     #dimensions = segmenter.extract_document_dimensions()
 
 
 
-    paragraphs = [segment for segment in segments if segment.type == "paragraph"]
-    lines = LineExtractor().extract_lines_via_path(filepath + ".jp2")
-    repair = RepairSegments(paragraphs, lines, 30)
-    rep_rows_segments1 = repair.repair_columns()
-    rep_rows_segments2 = repair.repair_rows()
-    paragraphs.clear()
-    segments_para = rep_rows_segments2
+    # paragraphs = [segment for segment in segments if segment.type == "paragraph"]
+    # # display_segments(paragraphs)
+    # lines = LineExtractor().extract_lines_via_path(filepath + ".jp2")
+    # repair = RepairSegments(paragraphs, lines, 30)
+    # rep_rows_segments1 = repair.repair_columns()
+    # rep_rows_segments2 = repair.repair_rows()
+    # paragraphs.clear()
+    # segments_para = rep_rows_segments2
 
 
 
@@ -82,7 +84,7 @@ if __name__ == '__main__':
 
     segment_order = SegmentOrdering(base_path, filename)
     segments_in_articles = segment_order.distribute_segments_into_articles(segments_headers, segments_para)
-    display_segments(segments_para)
+    # display_segments(segments_headers)
 
     # Display lines
-    segment_order.display_lines(lines)
+    # segment_order.display_lines(lines)
