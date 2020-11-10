@@ -3,6 +3,7 @@ import operator
 import enum
 from alto_segment_lib.segment import Segment
 from alto_segment_lib.segment import Line
+import statistics
 import re
 
 
@@ -172,6 +173,37 @@ class AltoSegmentExtractor:
 
     def inch1200_to_px(self, inch1200: int):
         return int(round((inch1200 * self.__dpi) / 1200))
+
+    def find_line_height_median(self, lines):
+        height = []
+        for line in lines:
+            height.append(line.height())
+        return statistics.median(height)
+
+    def group_lines_into_paragraph_headers(self, lines):
+        paragraph = []
+        header = []
+        median = self.find_line_height_median(lines)
+        threshold = 17
+
+        for line in lines:
+            if line.height() > median + threshold:
+                header.append(line)
+            else:
+                paragraph.append(line)
+
+        return header, paragraph
+
+    def combine_lines_into_segments(self, lines):
+        #skal ikke sættes lig med noget her
+        previous_line = lines[0]
+        segment = []
+        temp_segment = []
+
+        for line in lines:
+            if line.y1 - previous_line.y2 < 10 and previous_line.x1 - line.x1 < 10:
+                temp_segment.append(line)
+            previous_line = line
 
     def __font_statistics(self):
         fonts: dict = self.__find_font_sizes()

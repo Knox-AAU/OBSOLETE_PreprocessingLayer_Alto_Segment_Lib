@@ -3,7 +3,6 @@ import argparse
 import line_extractor
 from alto_segment_lib.repair_segments import RepairSegments
 from alto_segment_lib.alto_segment_extractor import AltoSegmentExtractor
-from alto_segment_lib.segmenter import Segmenter, FindType
 import matplotlib.pyplot as plt
 from alto_segment_lib.segment_ordering import SegmentOrdering
 from matplotlib.patches import Rectangle
@@ -16,13 +15,9 @@ base_path: str
 filename: str
 filepath: str
 filetype = ".jp2"
-# /Users/Alexi/Desktop/KnoxFiler/4/ aalborgstiftstidende-1942-01-02-01-0028B
-# /Users/Alexi/Desktop/KnoxFiler/4/ nordjyskestiftstidende-2006-10-10-01-0829A
 
 
 def display_segments(segments_for_display):
-    #plt.imshow(Image.open("/home/tlorentzen/Desktop/Example/1942/aalborgstiftstidende-1942-01-02-01-0028B.tiff"))
-
     plt.imshow(Image.open(filepath+filetype))
     plt.rcParams.update({'font.size': 3, 'text.color': "red", 'axes.labelcolor': "red"})
 
@@ -39,6 +34,30 @@ def display_segments(segments_for_display):
 
     plt.savefig(filepath+"-out.png", dpi=600, bbox_inches='tight')
     plt.gca().clear()
+    print("File has been generated: '" + filename + "-out.png'")
+
+
+def display_lines(headers_for_display, paragraphs_for_display):
+    plt.imshow(Image.open(filepath+filetype))
+    plt.rcParams.update({'font.size': 3, 'text.color': "red", 'axes.labelcolor': "red"})
+
+    counter = 1
+
+    # Add the patch to the Axes
+    #plt.hlines(100, 100, 100+repair.get_median_column_width(), colors='k', linestyles='solid', label='Median paragraph width')
+
+    for segment in headers_for_display:
+        plt.gca().add_patch(Rectangle((segment.x1, segment.y1), (segment.x2 - segment.x1), (segment.y2 - segment.y1), linewidth=0.3, edgecolor='b', facecolor='none'))
+        counter += 1
+
+    for segment in paragraphs_for_display:
+        plt.gca().add_patch(Rectangle((segment.x1, segment.y1), (segment.x2 - segment.x1), (segment.y2 - segment.y1), linewidth=0.3, edgecolor='r', facecolor='none'))
+        counter += 1
+
+    plt.savefig(filepath+"-out.png", dpi=600, bbox_inches='tight')
+    plt.gca().clear()
+    print("File has been generated: '" + filename + "-out.png'")
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -61,7 +80,9 @@ if __name__ == '__main__':
     # segments = segmenter.extract_segments()
     text_lines = altoExtractor.extract_lines()
     text_lines = altoExtractor.repair_text_lines(text_lines)
-    display_segments(text_lines)
+    display_lines(lists[0], lists[1])
+    lists = altoExtractor.group_lines_into_paragraph_headers(text_lines)
+    
     # print("Repair segments")
     # Extract document dimensions
     #dimensions = segmenter.extract_document_dimensions()
