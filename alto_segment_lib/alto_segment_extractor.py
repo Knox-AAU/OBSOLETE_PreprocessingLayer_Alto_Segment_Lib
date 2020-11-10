@@ -134,19 +134,16 @@ class AltoSegmentExtractor:
         return segments
 
     def extract_lines(self):
-        line_segments = []
+        lines = []
         text_lines = self.__xmldoc.getElementsByTagName('TextLine')
 
-        for text_block in text_blocks:
-            text_block_coordinates = self.__extract_coordinates(text_block)
-            segment = Segment(text_block_coordinates)
         for text_line in text_lines:
             text_line_coordinates = self.__extract_coordinates(text_line)
-            segment = Segment(text_line_coordinates)
+            line = Segment(text_line_coordinates)
 
-            line_segments.append(segment)
+            lines.append(line)
 
-        return line_segments
+        return lines
 
     def __extract_coordinates(self, element: minidom):
         coordinates = [
