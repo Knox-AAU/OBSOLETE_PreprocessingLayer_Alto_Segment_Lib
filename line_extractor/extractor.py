@@ -12,8 +12,7 @@ import cv2
 
 class LineExtractor:
 
-    def __init__(self, document_dimensions):
-        self.document_dimensions = document_dimensions
+    def __init__(self):
         self.config = configparser.ConfigParser()
         self.config.read('config.ini')
 
@@ -38,14 +37,12 @@ class LineExtractor:
         # extended_lines = self.extend_lines_vertically(corrected_lines, image)     # Idk hvad den gør, den gør ihvertfald linjerne skæve
         # self.show_lines_on_image(image, extended_lines)
         # self.show_lines_on_image(image, lines)
-        final_lines = self.remove_outline_lines(corrected_lines)
+        final_lines = self.remove_outline_lines(corrected_lines, image)
         return final_lines
 
-    def remove_outline_lines(self, lines):
+    def remove_outline_lines(self, lines, image):
         outline_stop = 100
-        max_x = self.document_dimensions[0]
-        max_y = self.document_dimensions[1]
-
+        max_x, max_y = image.shape
         lines_to_remove = []
 
         for line in lines:

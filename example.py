@@ -58,12 +58,12 @@ if __name__ == '__main__':
 
     # print("Repair segments")
     # Extract document dimensions
-    dimensions = segmenter.extract_document_dimensions()
+    #dimensions = segmenter.extract_document_dimensions()
 
 
 
     paragraphs = [segment for segment in segments if segment.type == "paragraph"]
-    lines = LineExtractor(dimensions).extract_lines_via_path(filepath + ".jp2")
+    lines = LineExtractor().extract_lines_via_path(filepath + ".jp2")
     repair = RepairSegments(paragraphs, lines, 30)
     rep_rows_segments1 = repair.repair_columns()
     rep_rows_segments2 = repair.repair_rows()
