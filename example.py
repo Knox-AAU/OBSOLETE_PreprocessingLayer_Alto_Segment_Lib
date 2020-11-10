@@ -79,7 +79,7 @@ if __name__ == '__main__':
     #    print('x:{0} y:{1} x1:{2} y2:{3} - {4}'.format(str(seg.x1), str(seg.y1), str(seg.x2), str(seg.y2), seg.type))
 
     # segments = segmenter.extract_segments()
-    # segments_para = [segment for segment in segments if segment.type == "paragraph"]
+    segments_para = [segment for segment in segments if segment.type == "paragraph"]
     segments_headers = [segment for segment in segments if segment.type == "headline"]
 
     segment_order = SegmentOrdering(base_path, filename)
