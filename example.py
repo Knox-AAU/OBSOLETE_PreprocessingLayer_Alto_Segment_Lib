@@ -52,17 +52,13 @@ if __name__ == '__main__':
     filename = args.filename
     filepath = base_path + filename
 
-    segmenter = AltoSegmentExtractor(filepath + ".alto.xml")
-    segmenter.set_dpi(300)
-    segmenter.set_margin(0)
-
-        altoExtractor = AltoSegmentExtractor(filepath + ".alto.xml")
-        altoExtractor.set_dpi(300)
-        altoExtractor.set_margin(0)
+    altoExtractor = AltoSegmentExtractor(filepath + ".alto.xml")
+    altoExtractor.set_dpi(300)
+    altoExtractor.set_margin(0)
     #
     # segments = segmenter.extract_segments()
-    segments = segmenter.extract_lines()
-    display_segments(segments)
+    text_lines = altoExtractor.extract_lines()
+    display_segments(text_lines)
     # print("Repair segments")
     # Extract document dimensions
     #dimensions = segmenter.extract_document_dimensions()
