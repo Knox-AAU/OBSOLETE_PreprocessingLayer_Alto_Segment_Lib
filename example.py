@@ -40,7 +40,6 @@ def display_segments(segments_for_display):
     plt.savefig(filepath+"-out.png", dpi=600, bbox_inches='tight')
     plt.gca().clear()
 
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # defines input and output path
@@ -85,11 +84,11 @@ if __name__ == '__main__':
     #    print('x:{0} y:{1} x1:{2} y2:{3} - {4}'.format(str(seg.x1), str(seg.y1), str(seg.x2), str(seg.y2), seg.type))
 
     # segments = segmenter.extract_segments()
-    # segments_para = [segment for segment in segments if segment.type == "paragraph"]
+    segments_para = [segment for segment in segments if segment.type == "paragraph"]
     segments_headers = [segment for segment in segments if segment.type == "headline"]
 
     segment_order = SegmentOrdering(base_path, filename)
-    segments_in_articles = segment_order.distribute_segments_into_articles(segments_headers, segments_para)
+    # segments_in_articles = segment_order.distribute_segments_into_articles(segments_headers, segments_para)
     # display_segments(segments_headers)
 
     # Display lines
