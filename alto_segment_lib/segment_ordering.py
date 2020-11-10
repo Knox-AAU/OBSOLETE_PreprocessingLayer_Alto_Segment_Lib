@@ -17,11 +17,9 @@ import cv2
 
 
 class SegmentOrdering:
-    File_path = "/Users/Alexi/Desktop/KnoxFiler/4/"
-    File_name = "aalborgstiftstidende-1942-01-02-01-0026B"
     Paragraph_normal_width: float
 
-    def __init__(self, file_path="/Users/Alexi/Desktop/KnoxFiler/4/", file_name="aalborgstiftstidende-1942-01-02-01-0028B"):
+    def __init__(self, file_path, file_name):
         self.File_path = file_path
         self.File_name = file_name
 
