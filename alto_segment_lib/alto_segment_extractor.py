@@ -23,9 +23,12 @@ class AltoSegmentExtractor:
     __para_fonts = []
     __head_fonts = []
 
-    def __init__(self, alto_path: str = "", dpi: int = 300, margin: int = 0):
+    def __init__(self, alto_path: str = "", dpi: int = 300, margin: int = 0, lines: list = None):
+        if lines is None:
+            lines = []
         self.__dpi = dpi
         self.__margin = margin
+        self.__lines = lines
         if not alto_path == "":
             self.set_path(alto_path)
 
@@ -143,6 +146,7 @@ class AltoSegmentExtractor:
 
             lines.append(line)
 
+        #self.__lines = lines
         return lines
 
     def __extract_coordinates(self, element: minidom):
@@ -199,3 +203,30 @@ class AltoSegmentExtractor:
         for style in styles:
             fonts[str(style.attributes['ID'].value)] = float(style.attributes['FONTSIZE'].value)
         return fonts
+
+    def repair_text_lines(self, text_lines):
+
+        if self.does_line_intersect_text_line(text_lines):
+            i=0
+
+        return text_lines
+
+
+    def does_line_intersect_text_line(self, text_line):
+        for line in self.__lines:
+
+            # finds 5% of the width and height as a buffer
+            width_5_percent = (text_line.x2 - text_line.x1) * 0.05
+            height_5_percent = (text_line.y2 - text_line.y1) * 0.05
+            # checks if a line is going through one of the lines of the text_line
+            # width/height is a buffer so we dont get false positives due to crooked lines
+            if line.is_horizontal():
+                if text_line.y1 + height_5_percent < line.y1 < text_line.y2 - height_5_percent:
+                    if line.x1 < text_line.x1 < line.x2 or line.x1 < text_line.x2 < line.x2:
+                        return True
+            else:
+                if text_line.x1 + width_5_percent < line.x1 < text_line.x2 - width_5_percent:
+                    if line.y1 < text_line.y1 < line.y2 or line.y1 < text_line.y2 < line.y2:
+                        return True
+
+        return False
