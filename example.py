@@ -32,6 +32,27 @@ def display_segments(segments_for_display):
         # plt.text(seg[0]+45, seg[1] + 200, str((seg[2]-seg[0])), horizontalalignment='left', verticalalignment='top')
         counter += 1
 
+    plt.savefig(filepath+"-out.png", dpi=600, bbox_inches='tight')
+    plt.gca().clear()
+    print("File has been generated: '" + filename + "-out.png'")
+
+
+def display_lines(headers_for_display, paragraphs_for_display):
+    plt.imshow(Image.open(filepath+filetype))
+    plt.rcParams.update({'font.size': 3, 'text.color': "red", 'axes.labelcolor': "red"})
+
+    counter = 1
+
+    # Add the patch to the Axes
+    #plt.hlines(100, 100, 100+repair.get_median_column_width(), colors='k', linestyles='solid', label='Median paragraph width')
+
+    for segment in headers_for_display:
+        plt.gca().add_patch(Rectangle((segment.x1, segment.y1), (segment.x2 - segment.x1), (segment.y2 - segment.y1), linewidth=0.3, edgecolor='b', facecolor='none'))
+        counter += 1
+
+    for segment in paragraphs_for_display:
+        plt.gca().add_patch(Rectangle((segment.x1, segment.y1), (segment.x2 - segment.x1), (segment.y2 - segment.y1), linewidth=0.3, edgecolor='r', facecolor='none'))
+        counter += 1
 
     plt.savefig(filepath+"-out.png", dpi=600, bbox_inches='tight')
     plt.gca().clear()
@@ -56,7 +77,8 @@ if __name__ == '__main__':
     #
     # segments = segmenter.extract_segments()
     text_lines = altoExtractor.extract_lines()
-    display_segments(text_lines)
+    lists = altoExtractor.group_lines_into_paragraph_headers(text_lines)
+    display_lines(lists[0], lists[1])
     # print("Repair segments")
     # Extract document dimensions
     #dimensions = segmenter.extract_document_dimensions()
