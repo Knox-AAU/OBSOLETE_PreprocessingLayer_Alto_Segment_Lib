@@ -39,12 +39,12 @@ class RepairSegments:
         for line in self.__lines:
 
             # finds 5% of the width and height as a buffer
-            width_5_procent = (segment.x2 - segment.x1) * 0.05
-            height_5_procent = (segment.y2 - segment.y1) * 0.05
+            width_5_percent = (segment.x2 - segment.x1) * 0.05
+            height_5_percent = (segment.y2 - segment.y1) * 0.05
             # checks if a line is going through one of the lines of the segment
             # width/height is a buffer so we dont get false positives due to crooked lines
             if line.is_horizontal():
-                if segment.y1 + height_5_procent < line.y1 < segment.y2 - height_5_procent:
+                if segment.y1 + height_5_percent < line.y1 < segment.y2 - height_5_percent:
                     if line.x1 < segment.x1 < line.x2 or line.x1 < segment.x2 < line.x2:
                         return True
             else:
