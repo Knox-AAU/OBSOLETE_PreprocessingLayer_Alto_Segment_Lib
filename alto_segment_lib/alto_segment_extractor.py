@@ -138,7 +138,7 @@ class AltoSegmentExtractor:
 
         return segments
 
-    def extract_lines(self):
+    def extract_lines(self, segments):
         lines = []
         text_lines = self.__xmldoc.getElementsByTagName('TextLine')
 
@@ -148,7 +148,7 @@ class AltoSegmentExtractor:
 
             lines.append(line)
 
-        self.__analyze_coordinates(lines)
+        self.__analyze_coordinates(segments)
         lines = self.repair_text_lines(lines)
 
         return lines
@@ -217,7 +217,7 @@ class AltoSegmentExtractor:
     def repair_text_lines(self, text_lines):
         margin = 5
         for text_line in text_lines:
-            if text_line.is_horizontal:
+            if text_line.is_box_horizontal():
                 (does_line_intersect, lines) = self.does_line_intersect_text_line(text_line)
                 if does_line_intersect:
                     for line in lines:
@@ -226,24 +226,25 @@ class AltoSegmentExtractor:
 
                         text_lines.append(Line(coords))
 
-        #text_lines = self.repair_remaining_lines_with_median(text_lines)
+       # text_lines = self.repair_remaining_lines_with_median(text_lines)
 
         return text_lines
 
     def repair_remaining_lines_with_median(self, lines):
         margin = 5
         new_lines = []
+
         for line in lines:
             if line.width() > self.__median_line_width:
                 coords = [self.__median_line_width + margin, line.y1, line.x2, line.y2]
                 line.x2 = self.__median_line_width - margin
 
                 new_lines.append(Line(coords))
+        newest_lines = []
+        if len(new_lines) != 0:
+            newest_lines = self.repair_remaining_lines_with_median(new_lines)
 
-        if not new_lines:
-            lines = lines + self.repair_remaining_lines_with_median(new_lines)
-
-        return lines
+        return [*new_lines, *newest_lines]
 
     def does_line_intersect_text_line(self, text_line):
         new_lines = []
