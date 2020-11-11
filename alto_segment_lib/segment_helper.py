@@ -53,7 +53,7 @@ class SegmentHelper:
         previous_line = None
         temp = []
         column_groups = []
-        median = self.find_line_width_median(lines) * 0.4
+        median = self.find_line_width_median(lines) * 0.4 # Add a 40 % margin
 
         lines = sorted(lines, key=lambda sorted_line: sorted_line.x1)
 
@@ -68,7 +68,7 @@ class SegmentHelper:
                 column_groups.append(temp)
                 temp = [line]
                 previous_line = line
-        if len(temp) > 1:
+        if len(temp) > 0:
             column_groups.append(temp)
         return column_groups
 
@@ -78,21 +78,24 @@ class SegmentHelper:
 
         for group in column_groups:
             group = sorted(group, key=lambda sorted_group: sorted_group.y1)
-            median = self.find_line_height_median(group) * 1.05 #add a 5 % margin
-            print(median)
+            median = self.find_line_height_median(group)
             previous_line = None
             for line in group:
                 if previous_line is None:
                     previous_line = line
                     temp = [line]
                     continue
-                if line.y1 - previous_line.y2 < median:
+
+                line_diff = line.width() - previous_line.width()
+                max_diff = 100
+
+                if line.y1 - previous_line.y2 < median and line_diff in range(-max_diff, max_diff):
                     temp.append(line)
                 else:
                     segment_groups.append(temp)
                     temp = [line]
                 previous_line = line
-            if len(temp) > 1:
+            if len(temp) > 0:
                 segment_groups.append(temp)
                 temp = []
         return segment_groups
@@ -102,35 +105,33 @@ class SegmentHelper:
         if len(lines) == 0:
             return None
 
-        box_height = 0
-        box_width = 0
-        pos_x = lines[0].x1
-        pos_y = lines[0].y1
+        x1 = lines[0].x1
+        x2 = lines[0].x2
+        y1 = lines[0].y1
+        y2 = lines[0].y2
         coordinates = []
 
         # Finds width and height line and change box height and width accordingly
         for line in lines:
-            line_width = line.width()
-
             # Find x-coordinate upper left corner
-            if line.x1 < pos_x:
-                pos_x = line.x1
+            if line.x1 < x1:
+                x1 = line.x1
+
+            # Find x-coordinate lower right corner
+            if line.x2 > x2:
+                x2 = line.x2
 
             # Find y-coordinate upper left corner
-            if line.y1 < pos_y:
-                pos_y = line.y1
+            if line.y1 < y1:
+                y1 = line.y1
 
-            # Find box height
-            if line.y2 > box_height:
-                box_height = line.y2
+            # Find y-coordinate lower right corner
+            if line.y2 > y2:
+                y2 = line.y2
 
-            # Find box width
-            if line_width > box_width:
-                box_width = line_width
-
-        coordinates.append(pos_x)
-        coordinates.append(pos_y)
-        coordinates.append(pos_x + box_width)
-        coordinates.append(box_height)
+        coordinates.append(x1)
+        coordinates.append(y1)
+        coordinates.append(x2)
+        coordinates.append(y2)
 
         return coordinates

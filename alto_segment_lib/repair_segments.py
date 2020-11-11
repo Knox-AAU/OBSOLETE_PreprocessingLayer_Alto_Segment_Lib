@@ -62,45 +62,57 @@ class RepairSegments:
                 segment.x2 = segment.x1 + (cur_seg_width / 2) - 5
 
                 # Make segment
-                coords = [segment.x1 + (cur_seg_width / 2) + 5, segment.y1, segment.x2 + (cur_seg_width / 2), segment.y2]
+                coords = [segment.x1 + (cur_seg_width / 2) + 5, segment.y1, segment.x2 + (cur_seg_width / 2),
+                          segment.y2]
                 add_segment(self.__segments, coords, [], segment.type)
 
         return self.__segments.copy()
+
+    def __remove_surrounded_segments(self, segment, subsegment):
+        # Checks if both y-coordinates for the subsegment is within the segment: remove the subsegment
+        if segment.between_y_coords(subsegment.y1 + 5) \
+                and segment.between_y_coords(subsegment.y2 - 5) \
+                and segment.between_x_coords(subsegment.x1 + 5) \
+                and segment.between_x_coords(subsegment.x2 - 5):
+            return True
+        return False
 
     def repair_rows(self, range_span: int = 50):
         return_segments = self.__segments.copy()
         segment_helper = SegmentHelper()
 
-        # Iterates throupg all segments and all other segments
+        # Iterates through all segments and all other segments
         for segment in self.__segments:
             for subsegment in self.__segments:
                 if not segment.compare(subsegment):
                     lines = segment.lines
                     grouped_lines = []
 
+                    if subsegment in return_segments and self.__remove_surrounded_segments(segment, subsegment):
+                        return_segments.remove(subsegment)
                     # Checks if subsegment is vertically close to segment
-                    if (segment.x1 - range_span) <= subsegment.x1 <= (segment.x1 + range_span):
-
-                        # Checks if both y-coordinates for the subsegment is within the segment: remove the subsegment
-                        if segment.between_y_coords(subsegment.y1) and segment.between_y_coords(subsegment.y2) and subsegment in return_segments:
+                    elif (segment.between_x_coords(subsegment.x1 + 20)
+                            or segment.between_x_coords(subsegment.x2 - 20)) \
+                            and subsegment in return_segments:
+                        if segment.between_y_coords(subsegment.y1):
                             return_segments.remove(subsegment)
-                        # Checks if  the  upper y-coordinate for subsegment is within segment: move y-coordinate to
-                        # be beside segment
-                        elif segment.between_y_coords(subsegment.y1):
+                            # Move y-coordinate to be beside segment
                             subsegment.y1 = segment.y2
-                        # Checks if  the  lower y-coordinate for subsegment is within segment: move y-coordinate to
-                        # be beside segment
+                            return_segments.append(subsegment)
+                        # Checks if the lower y-coordinate for subsegment is within segment
                         elif segment.between_y_coords(subsegment.y2):
+                            return_segments.remove(subsegment)
+                            # Move y-coordinate to be beside segment
                             subsegment.y2 = segment.y1
-
-                    # hvis subsegment ligger Segment med forskellige x-koordinater: split op i mindre bokse
+                            return_segments.append(subsegment)
+                    #hvis subsegment ligger Segment med forskellige x-koordinater: split op i mindre bokse
                     elif (segment.between_y_coords(subsegment.y1) or segment.between_y_coords(subsegment.y2)) \
                             and (segment.between_x_coords(subsegment.x1) or segment.between_x_coords(subsegment.x2)) \
                             and segment in return_segments:
 
                         counter: int = 0
 
-                        print('{0}, {1}, {2}, {3}'.format(segment.x1, segment.y1, segment.x2, segment.y2))
+                        # print('{0}, {1}, {2}, {3}'.format(segment.x1, segment.y1, segment.x2, segment.y2))
 
                         while counter < (len(lines) - 1):
                             line_diff = 0.3  # minimum percentage difference between lines for it to be considered new seg
@@ -169,7 +181,8 @@ class RepairSegments:
                 new_coordinates = segment_helper.make_box_around_lines(grouped_lines)
 
                 if new_coordinates is not None:
-                    self.__add_segment(self.__new_segments, new_coordinates[0], new_coordinates[1], new_coordinates[2], new_coordinates[3], grouped_lines, segment.type)
+                    self.__add_segment(self.__new_segments, new_coordinates[0], new_coordinates[1], new_coordinates[2],
+                                       new_coordinates[3], grouped_lines, segment.type)
                 grouped_lines.clear()
                 return_segments.remove(segment)
 
