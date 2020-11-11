@@ -32,6 +32,7 @@ class AltoSegmentExtractor:
         self.__lines = lines
         if not alto_path == "":
             self.set_path(alto_path)
+        self.__median_line_width = 0
 
     def set_path(self, path: str):
         self.__path = path
@@ -147,7 +148,16 @@ class AltoSegmentExtractor:
 
             lines.append(line)
 
+        self.__analyze_coordinates(lines)
+        lines = self.repair_text_lines(lines)
+
         return lines
+
+    def __analyze_coordinates(self, lines):
+        all_para = []
+        for line in lines:
+            all_para.append(line.x2 - line.x1)
+        self.__median_line_width = statistics.median(all_para)
 
     def __extract_coordinates(self, element: minidom):
         coordinates = [
@@ -216,7 +226,24 @@ class AltoSegmentExtractor:
 
                         text_lines.append(Line(coords))
 
+        #text_lines = self.repair_remaining_lines_with_median(text_lines)
+
         return text_lines
+
+    def repair_remaining_lines_with_median(self, lines):
+        margin = 5
+        new_lines = []
+        for line in lines:
+            if line.width() > self.__median_line_width:
+                coords = [self.__median_line_width + margin, line.y1, line.x2, line.y2]
+                line.x2 = self.__median_line_width - margin
+
+                new_lines.append(Line(coords))
+
+        if not new_lines:
+            lines = lines + self.repair_remaining_lines_with_median(new_lines)
+
+        return lines
 
     def does_line_intersect_text_line(self, text_line):
         new_lines = []
