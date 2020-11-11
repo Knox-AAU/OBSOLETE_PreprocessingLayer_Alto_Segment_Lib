@@ -4,6 +4,8 @@ import line_extractor
 from alto_segment_lib.repair_segments import RepairSegments
 from alto_segment_lib.alto_segment_extractor import AltoSegmentExtractor
 import matplotlib.pyplot as plt
+
+from alto_segment_lib.segment_helper import SegmentHelper
 from alto_segment_lib.segment_ordering import SegmentOrdering
 from matplotlib.patches import Rectangle
 from PIL import Image
@@ -32,7 +34,7 @@ def display_segments(segments_for_display):
         # plt.text(seg[0]+45, seg[1] + 200, str((seg[2]-seg[0])), horizontalalignment='left', verticalalignment='top')
         counter += 1
 
-    plt.savefig(filepath+"-out.png", dpi=600, bbox_inches='tight')
+    plt.savefig(filepath+"-out2.png", dpi=600, bbox_inches='tight')
     plt.gca().clear()
     print("File has been generated: '" + filename + "-out.png'")
 
@@ -80,10 +82,13 @@ if __name__ == '__main__':
     # segments = segmenter.extract_segments()
     text_lines = altoExtractor.extract_lines()
     text_lines = altoExtractor.repair_text_lines(text_lines)
-    lists = altoExtractor.group_lines_into_paragraph_headers(text_lines)
-    segments = altoExtractor.combine_lines_into_segments(lists[1])
     display_segments(text_lines)
     #display_lines(lists[0], lists[1])
+    segment_helper = SegmentHelper()
+    lists = segment_helper.group_lines_into_paragraph_headers(text_lines)
+    #display_lines(lists[0], lists[1])
+    segments = segment_helper.combine_lines_into_segments(lists[1])
+    display_segments(segments)
 
     # print("Repair segments")
     # Extract document dimensions

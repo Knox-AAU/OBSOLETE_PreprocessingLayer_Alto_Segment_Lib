@@ -9,7 +9,7 @@ class Segment:
     y2: int
     lines: list
 
-    def __init__(self, coord: list = None, seg_type: str = ""):
+    def __init__(self, coord: list = None, seg_type: str = "unknown"):
         self.lines = []
 
         if coord is None:

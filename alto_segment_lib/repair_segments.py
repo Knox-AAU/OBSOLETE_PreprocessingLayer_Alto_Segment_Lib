@@ -1,4 +1,5 @@
 from alto_segment_lib.segment import Segment
+from alto_segment_lib.segment_helper import SegmentHelper
 from line_extractor.extractor import LineExtractor
 import statistics
 
@@ -68,6 +69,7 @@ class RepairSegments:
 
     def repair_rows(self, range_span: int = 50):
         return_segments = self.__segments.copy()
+        segment_helper = SegmentHelper()
 
         # Iterates throupg all segments and all other segments
         for segment in self.__segments:
@@ -131,7 +133,7 @@ class RepairSegments:
                             # Checks if the next and the next next line are changed
                             if line1_changed and line2_changed:
                                 grouped_lines.append(line)
-                                new_coordinates = self.__make_box_around_lines(grouped_lines)
+                                new_coordinates = segment_helper.make_box_around_lines(grouped_lines)
 
                                 if new_coordinates is not None:
                                     add_segment(self.__new_segments, new_coordinates, grouped_lines, segment.type)
@@ -145,7 +147,7 @@ class RepairSegments:
 
                         if len(grouped_lines) > 0:
                             grouped_lines.append(lines[counter])
-                            coordinates = self.__make_box_around_lines(grouped_lines)
+                            coordinates = segment_helper.make_box_around_lines(grouped_lines)
 
                             if coordinates is not None:
                                 add_segment(self.__new_segments, coordinates, grouped_lines, segment.type)
@@ -154,17 +156,17 @@ class RepairSegments:
                             return_segments.remove(segment)
 
         return_segments.extend(self.__new_segments)
-        return return_segments
         return return_segments.copy()
 
     def get_median_column_width(self):
         return self.__median_paragraph_width
 
     def add_last_segment(self, lines, counter, grouped_lines, return_segments, segment):
+        segment_helper = SegmentHelper()
         if not counter >= len(lines):
             grouped_lines.append(lines[counter])
             if len(grouped_lines) > 0:
-                new_coordinates = self.__make_box_around_lines(grouped_lines)
+                new_coordinates = segment_helper.make_box_around_lines(grouped_lines)
 
                 if new_coordinates is not None:
                     self.__add_segment(self.__new_segments, new_coordinates[0], new_coordinates[1], new_coordinates[2], new_coordinates[3], grouped_lines, segment.type)
@@ -183,40 +185,3 @@ class RepairSegments:
 
     def get_avg_column_width(self):
         return self.__avg_paragraph_width
-
-    def __make_box_around_lines(self, lines: list):
-        if len(lines) == 0:
-            return None
-
-        box_height = 0
-        box_width = 0
-        pos_x = lines[0].x1
-        pos_y = lines[0].y1
-        coordinates = []
-
-        # Finds width and height line and change box height and width accordingly
-        for line in lines:
-            line_width = line.width()
-
-            # Find x-coordinate upper left corner
-            if line.x1 < pos_x:
-                pos_x = line.x1
-
-            # Find y-coordinate upper left corner
-            if line.y1 < pos_y:
-                pos_y = line.y1
-
-            # Find box height
-            if line.y2 > box_height:
-                box_height = line.y2
-
-            # Find box width
-            if line_width > box_width:
-                box_width = line_width
-
-        coordinates.append(pos_x)
-        coordinates.append(pos_y)
-        coordinates.append(pos_x + box_width)
-        coordinates.append(box_height)
-
-        return coordinates
