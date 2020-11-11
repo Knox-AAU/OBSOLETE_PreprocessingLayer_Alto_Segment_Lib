@@ -79,7 +79,6 @@ if __name__ == '__main__':
     #
     # segments = segmenter.extract_segments()
     text_lines = altoExtractor.extract_lines()
-    text_lines = altoExtractor.repair_text_lines(text_lines)
     lists = altoExtractor.group_lines_into_paragraph_headers(text_lines)
     segments = altoExtractor.combine_lines_into_segments(lists[1])
     display_segments(text_lines)
