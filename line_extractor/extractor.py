@@ -35,12 +35,16 @@ class LineExtractor:
 
 
         lines = self.extract_lines_via_image(image)
-        corrected_lines = self.correct_lines(lines)
+        #corrected_lines = self.correct_lines(lines)
         # extended_lines = self.extend_lines_vertically(corrected_lines, image)     # Idk hvad den gør, den gør ihvertfald linjerne skæve
         # self.show_lines_on_image(image, extended_lines)
-        # self.show_lines_on_image(image, lines)
-        final_lines = self.remove_outline_lines(corrected_lines, image)
+        self.show_lines_on_image(image, lines)
+        final_lines = self.remove_outline_lines(lines, image)
         return final_lines
+
+    def extract_lines_via_image(self, image):
+        enhanced_image = self.enhance_lines(image)
+        return self.get_lines_from_binary_image(enhanced_image)
 
     def remove_outline_lines(self, lines, image):
         outline_stop = 100
@@ -61,10 +65,6 @@ class LineExtractor:
             lines.remove(line)
 
         return lines
-
-    def extract_lines_via_image(self, image):
-        enhanced_image = self.enhance_lines(image)
-        return self.get_lines_from_binary_image(enhanced_image)
 
     def enhance_lines(self, image):
 
@@ -130,7 +130,7 @@ class LineExtractor:
 
         lines_edges = cv2.addWeighted(image_in_color, 0.5, line_image, 1, 0)
 
-        cv2.imwrite("corrected_lines.png", lines_edges)
+        cv2.imwrite("lines.png", lines_edges)
         cv2.namedWindow("image", cv2.WINDOW_NORMAL)
         cv2.imshow("image", lines_edges)
         cv2.waitKey(0)

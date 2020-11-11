@@ -288,18 +288,21 @@ class AltoSegmentExtractor:
         return fonts
 
     def repair_text_lines(self, text_lines):
-
+        margin = 5
         for text_line in text_lines:
-            (does_line_intersect, line) = self.does_line_intersect_text_line(text_line)
-            if does_line_intersect:
-                coords = [line.x1, text_line.y1, text_line.x2, text_line.y2]
-                text_line.x2 = int(line.x1)
+            if text_line.is_horizontal:
+                (does_line_intersect, lines) = self.does_line_intersect_text_line(text_line)
+                if does_line_intersect:
+                    for line in lines:
+                        coords = [line.x1 + margin, text_line.y1, text_line.x2, text_line.y2]
+                        text_line.x2 = line.x1 - margin
 
-                text_lines.append(Line(coords))
+                        text_lines.append(Line(coords))
 
         return text_lines
 
     def does_line_intersect_text_line(self, text_line):
+        new_lines = []
         for line in self.__lines:
             # finds 5% of the width and height as a buffer
             width_5_percent = (text_line.x2 - text_line.x1) * 0.05
@@ -308,6 +311,10 @@ class AltoSegmentExtractor:
             if not line.is_horizontal():
                 if text_line.x1 + width_5_percent < line.x1 < text_line.x2 - width_5_percent:
                     if line.y1 < text_line.y1 < line.y2 or line.y1 < text_line.y2 < line.y2:
-                        return True, line
+                        new_lines.append(line)
 
-        return False, None
+        if len(new_lines) != 0:
+            return True, new_lines
+        else:
+            return False, None
+
