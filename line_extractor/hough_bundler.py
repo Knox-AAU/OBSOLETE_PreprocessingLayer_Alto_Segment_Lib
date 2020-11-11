@@ -136,6 +136,7 @@ class HoughBundler:
 
         return merged_lines_all
 
+
     def split_lines_into_horizontal_and_vertical(self, lines):
         lines_vertical = []
         lines_horizontal = []

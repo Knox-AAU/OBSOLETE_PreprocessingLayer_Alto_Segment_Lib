@@ -74,18 +74,9 @@ class Line:
     def height(self):
         return self.y2 - self.y1
 
-    def is_horizontal(self):
-        orientation = self.get_orientation()
-        # if horizontal
-        if 45 < orientation < 135:
+    def is_box_horizontal(self):
+        if (self.x2 - self.x1) > (self.y2 - self.y1):
             return True
-
-    def get_orientation(self):
-        '''get orientation of a line, using its length
-        https://en.wikipedia.org/wiki/Atan2
-        '''
-        orientation = math.atan2(abs((self.x1 - self.x2)), abs((self.y1 - self.y2)))
-        return math.degrees(orientation)
 
     # def __init__(self, x: int, y: int, x2: int, y2: int):
     #     self.x1 = x

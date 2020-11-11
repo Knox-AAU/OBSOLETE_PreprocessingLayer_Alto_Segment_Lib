@@ -36,10 +36,9 @@ class LineExtractor:
 
         lines = self.extract_lines_via_image(image)
         #corrected_lines = self.correct_lines(lines)
-        # extended_lines = self.extend_lines_vertically(corrected_lines, image)     # Idk hvad den gør, den gør ihvertfald linjerne skæve
-        # self.show_lines_on_image(image, extended_lines)
-        # self.show_lines_on_image(image, lines)
-        final_lines = self.remove_outline_lines(lines, image)
+        extended_lines = self.extend_lines_vertically(lines, image)     # Idk hvad den gør, den gør ihvertfald linjerne skæve
+        self.show_lines_on_image(image, extended_lines)
+        final_lines = self.remove_outline_lines(extended_lines, image)
         return final_lines
 
     def extract_lines_via_image(self, image):
@@ -95,6 +94,7 @@ class LineExtractor:
 
         merged_image = cv2.addWeighted(image_horizontal, 1, image_vertical, 1, 0)
 
+        cv2.imwrite("clean_lines.png", merged_image)
         return merged_image
 
     def get_lines_from_binary_image(self, image):
@@ -130,7 +130,8 @@ class LineExtractor:
 
         lines_edges = cv2.addWeighted(image_in_color, 0.5, line_image, 1, 0)
 
-        cv2.imwrite("lines.png", lines_edges)
+        #cv2.imwrite(r"/home/jakob/Desktop/2015-01-01-01/lines.png", lines_edges)
+        #print("done")
         cv2.namedWindow("image", cv2.WINDOW_NORMAL)
         cv2.imshow("image", lines_edges)
         cv2.waitKey(0)
@@ -139,8 +140,9 @@ class LineExtractor:
         horizontal_size, vertical_size = image.shape
 
         for line in lines:
-            if line.y2 > vertical_size - 200:
-                line.y2 = line.y2 + 100
+            if not line.is_horizontal():
+                if line.y2 > vertical_size - 100:
+                    line.y2 = line.y2 + 50
 
         return lines
 
