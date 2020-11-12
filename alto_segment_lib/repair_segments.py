@@ -65,16 +65,6 @@ class RepairSegments:
 
         return self.__segments.copy()
 
-    @staticmethod
-    def __remove_surrounded_segments(segment, subsegment):
-        # Checks if both y-coordinates for the subsegment is within the segment: remove the subsegment
-        if segment.between_y_coords(subsegment.y1 + 5) \
-                and segment.between_y_coords(subsegment.y2 - 5) \
-                and segment.between_x_coords(subsegment.x1 + 5) \
-                and segment.between_x_coords(subsegment.x2 - 5):
-            return True
-        return False
-
     def repair_rows(self, range_span: int = 50):
         return_segments = self.__segments.copy()
         segment_helper = SegmentHelper()
@@ -112,4 +102,3 @@ class RepairSegments:
 
     def get_median_column_width(self):
         return self.__median_paragraph_width
-

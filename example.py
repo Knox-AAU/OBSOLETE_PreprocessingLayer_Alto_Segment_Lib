@@ -65,7 +65,7 @@ def display_lines(headers_for_display, paragraphs_for_display):
     print("File has been generated: '" + filename + "-out.png'")
 
 
-def run_multiple_files():
+def run_multiple_files(base_path):
     for file_name in os.listdir(base_path):
         file_path = os.path.join(base_path, file_name)
 
@@ -84,7 +84,6 @@ def run_file(file_path):
     altoExtractor.set_dpi(300)
     altoExtractor.set_margin(0)
 
-    # segments = segmenter.extract_segments()
     text_lines = altoExtractor.extract_lines()
     # text_lines = altoExtractor.repair_text_lines(text_lines)
     # display_segments(text_lines)
@@ -120,7 +119,7 @@ if __name__ == '__main__':
     filename = args.filename
     filepath = base_path + filename
 
-    # run_multiple_files()
+    # run_multiple_files(base_path)
     run_file(filepath)
 
     # for seg in paragraphs:
