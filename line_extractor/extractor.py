@@ -37,7 +37,7 @@ class LineExtractor:
         lines = self.extract_lines_via_image(image)
         #corrected_lines = self.correct_lines(lines)
         extended_lines = self.extend_lines_vertically(lines, image)     # Idk hvad den gør, den gør ihvertfald linjerne skæve
-        self.show_lines_on_image(image, extended_lines)
+        #self.show_lines_on_image(image, extended_lines)
         final_lines = self.remove_outline_lines(extended_lines, image)
         return final_lines
 
