@@ -84,10 +84,11 @@ def run_file(file_path):
     altoExtractor.set_dpi(300)
     altoExtractor.set_margin(0)
 
-    text_lines = altoExtractor.extract_lines()
-    # text_lines = altoExtractor.repair_text_lines(text_lines)
-    # display_segments(text_lines)
     segment_helper = SegmentHelper()
+
+    text_lines = altoExtractor.extract_lines()
+    text_lines = segment_helper.repair_text_lines(text_lines)
+    # display_segments(text_lines)
     lists = segment_helper.group_lines_into_paragraph_headers(text_lines)
     # display_lines(lists[0], lists[1])
     segments = segment_helper.combine_lines_into_segments(lists[1])

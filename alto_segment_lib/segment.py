@@ -32,16 +32,6 @@ class Segment:
     def between_x_coords(self, coord: int, margin: float = 0.0):
         return (self.x1 * (1 - margin)) <= coord <= (self.x2 * (1 + margin))
 
-    # def __init__(self, type_, top_x, top_y, bot_x, bot_y):
-    #     self.type = type_
-    #     self.x1 = top_x
-    #     self.y1 = top_y
-    #     self.x2 = bot_x
-    #     self.y2 = bot_y
-    #
-    # def __init__(self):
-    #     pass
-
     def between_y_coords(self, coord: int, margin: int = 0):
         return (self.y1 * (1 - margin)) <= coord <= (self.y2 * (1 + margin))
 
@@ -77,9 +67,3 @@ class Line:
     def is_box_horizontal(self):
         if (self.x2 - self.x1) > (self.y2 - self.y1):
             return True
-
-    # def __init__(self, x: int, y: int, x2: int, y2: int):
-    #     self.x1 = x
-    #     self.y1 = y
-    #     self.x2 = x2
-    #     self.y2 = y2

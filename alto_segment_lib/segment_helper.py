@@ -146,3 +146,52 @@ class SegmentHelper:
         coordinates.append(y2)
 
         return coordinates
+
+    def repair_text_lines(self, text_lines):
+        margin = 5
+        for text_line in text_lines:
+            if text_line.is_box_horizontal():
+                (does_line_intersect, lines) = self.does_line_intersect_text_line(text_line)
+                if does_line_intersect:
+                    for line in lines:
+                        coords = [line.x1 + margin, text_line.y1, text_line.x2, text_line.y2]
+                        text_line.x2 = line.x1 - margin
+
+                        text_lines.append(Line(coords))
+
+       # text_lines = self.repair_remaining_lines_with_median(text_lines)
+
+        return text_lines
+
+    def repair_remaining_lines_with_median(self, lines):
+        margin = 5
+        new_lines = []
+
+        for line in lines:
+            if line.width() > self.__median_line_width:
+                coords = [self.__median_line_width + margin, line.y1, line.x2, line.y2]
+                line.x2 = self.__median_line_width - margin
+
+                new_lines.append(Line(coords))
+        newest_lines = []
+        if len(new_lines) != 0:
+            newest_lines = self.repair_remaining_lines_with_median(new_lines)
+
+        return [*new_lines, *newest_lines]
+
+    def does_line_intersect_text_line(self, text_line):
+        new_lines = []
+        for line in self.__lines:
+            # finds 5% of the width and height as a buffer
+            width_5_percent = (text_line.x2 - text_line.x1) * 0.05
+            # checks if a line is going through one of the lines of the text_line
+            # width/height is a buffer so we dont get false positives due to crooked lines
+            if not line.is_horizontal():
+                if text_line.x1 + width_5_percent < line.x1 < text_line.x2 - width_5_percent:
+                    if line.y1 < text_line.y1 < line.y2 or line.y1 < text_line.y2 < line.y2:
+                        new_lines.append(line)
+
+        if len(new_lines) != 0:
+            return True, new_lines
+        else:
+            return False, None
