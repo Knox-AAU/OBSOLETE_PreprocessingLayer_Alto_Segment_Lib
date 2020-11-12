@@ -94,7 +94,6 @@ class LineExtractor:
 
         merged_image = cv2.addWeighted(image_horizontal, 1, image_vertical, 1, 0)
 
-        cv2.imwrite("clean_lines.png", merged_image)
         return merged_image
 
     def get_lines_from_binary_image(self, image):
@@ -141,8 +140,8 @@ class LineExtractor:
 
         for line in lines:
             if not line.is_horizontal():
-                if line.y2 > vertical_size - 100:
-                    line.y2 = line.y2 + 50
+                if line.y2 > vertical_size - 200:
+                    line.y2 = line.y2 + 150
 
         return lines
 
