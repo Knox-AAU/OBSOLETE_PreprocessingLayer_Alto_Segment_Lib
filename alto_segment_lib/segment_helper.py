@@ -55,6 +55,7 @@ class SegmentHelper:
         column_groups = []
         median = self.find_line_width_median(lines) * 0.4 # Add a 40 % margin
 
+        # Sorts the list in an ascending order based on x1
         lines = sorted(lines, key=lambda sorted_line: sorted_line.x1)
 
         for line in lines:
@@ -62,14 +63,19 @@ class SegmentHelper:
                 previous_line = line
                 temp = [line]
                 continue
+
+            # Checks if the current and previous line are in the sane column
             if line.x1 - previous_line.x1 < median:
                 temp.append(line)
             else:
                 column_groups.append(temp)
                 temp = [line]
                 previous_line = line
+
+        # Saves the last column
         if len(temp) > 0:
             column_groups.append(temp)
+
         return column_groups
 
     def group_same_segment(self, column_groups):
@@ -80,6 +86,7 @@ class SegmentHelper:
             group = sorted(group, key=lambda sorted_group: sorted_group.y1)
             median = self.find_line_height_median(group)
             previous_line = None
+
             for line in group:
                 if previous_line is None:
                     previous_line = line
@@ -89,15 +96,19 @@ class SegmentHelper:
                 line_diff = line.width() - previous_line.width()
                 max_diff = 100
 
+                # Checks if the current and previous lines are in the same segment
                 if line.y1 - previous_line.y2 < median and line_diff in range(-max_diff, max_diff):
                     temp.append(line)
                 else:
                     segment_groups.append(temp)
                     temp = [line]
                 previous_line = line
+
+            # Saves the last segment
             if len(temp) > 0:
                 segment_groups.append(temp)
                 temp = []
+
         return segment_groups
 
     @staticmethod
