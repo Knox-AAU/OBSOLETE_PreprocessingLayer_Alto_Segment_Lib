@@ -80,14 +80,14 @@ def run_multiple_files(base_path):
 def run_file(file_path):
     lines = LineExtractor().extract_lines_via_path(file_path + ".jp2")
 
-    altoExtractor = AltoSegmentExtractor(file_path + ".alto.xml", lines=lines)
+    altoExtractor = AltoSegmentExtractor(file_path + ".alto.xml")
     altoExtractor.set_dpi(300)
     altoExtractor.set_margin(0)
 
     segment_helper = SegmentHelper()
 
     text_lines = altoExtractor.extract_lines()
-    text_lines = segment_helper.repair_text_lines(text_lines)
+    text_lines = segment_helper.repair_text_lines(text_lines, lines)
     # display_segments(text_lines)
     lists = segment_helper.group_lines_into_paragraph_headers(text_lines)
     # display_lines(lists[0], lists[1])
@@ -99,7 +99,6 @@ def run_file(file_path):
     # dimensions = segmenter.extract_document_dimensions()
 
     paragraphs = [segment for segment in segments if segment.type == "paragraph"]
-    lines = LineExtractor().extract_lines_via_path(filepath + ".jp2")
     repair = RepairSegments(paragraphs, lines, 30)
     rep_rows_segments1 = repair.repair_columns()
     rep_rows_segments2 = repair.repair_rows()

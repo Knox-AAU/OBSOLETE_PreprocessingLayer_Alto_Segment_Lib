@@ -147,11 +147,11 @@ class SegmentHelper:
 
         return coordinates
 
-    def repair_text_lines(self, text_lines):
+    def repair_text_lines(self, text_lines, lines):
         margin = 5
         for text_line in text_lines:
             if text_line.is_box_horizontal():
-                (does_line_intersect, lines) = self.does_line_intersect_text_line(text_line)
+                (does_line_intersect, lines) = self.does_line_intersect_text_line(text_line, lines)
                 if does_line_intersect:
                     for line in lines:
                         coords = [line.x1 + margin, text_line.y1, text_line.x2, text_line.y2]
@@ -179,9 +179,9 @@ class SegmentHelper:
 
         return [*new_lines, *newest_lines]
 
-    def does_line_intersect_text_line(self, text_line):
+    def does_line_intersect_text_line(self, text_line, lines: list):
         new_lines = []
-        for line in self.__lines:
+        for line in lines:
             # finds 5% of the width and height as a buffer
             width_5_percent = (text_line.x2 - text_line.x1) * 0.05
             # checks if a line is going through one of the lines of the text_line

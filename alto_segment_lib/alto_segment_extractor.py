@@ -24,12 +24,9 @@ class AltoSegmentExtractor:
     __para_fonts = []
     __head_fonts = []
 
-    def __init__(self, alto_path: str = "", dpi: int = 300, margin: int = 0, lines: list = None):
-        if lines is None:
-            lines = []
+    def __init__(self, alto_path: str = "", dpi: int = 300, margin: int = 0):
         self.__dpi = dpi
         self.__margin = margin
-        self.__lines = lines
         if not alto_path == "":
             self.set_path(alto_path)
         self.__median_line_width = 0
@@ -138,7 +135,7 @@ class AltoSegmentExtractor:
 
         return segments
 
-    def extract_lines(self, segments):
+    def extract_lines(self):
         lines = []
         text_lines = self.__xmldoc.getElementsByTagName('TextLine')
 
@@ -147,9 +144,6 @@ class AltoSegmentExtractor:
             line = Line(text_line_coordinates)
 
             lines.append(line)
-
-        self.__analyze_coordinates(segments)
-        lines = self.repair_text_lines(lines)
 
         return lines
 
