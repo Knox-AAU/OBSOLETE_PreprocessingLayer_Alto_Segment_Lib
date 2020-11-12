@@ -11,7 +11,7 @@ from matplotlib.patches import Rectangle
 from PIL import Image
 from alto_segment_lib.segment import Segment
 from line_extractor.extractor import LineExtractor
-from line_extractor.line import Line
+from alto_segment_lib.segment import Line
 environ["OPENCV_IO_ENABLE_JASPER"] = "true"
 import cv2
 

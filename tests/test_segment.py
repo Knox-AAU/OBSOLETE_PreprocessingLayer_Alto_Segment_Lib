@@ -7,10 +7,7 @@ class TestSegment:
         segment_one = Segment([200, 400, 400, 600])
         segment_two = Segment([200, 400, 400, 600])
 
-        if segment_one.compare(segment_two):
-            assert True
-        else:
-            assert False
+        assert segment_one.compare(segment_two)
 
     def test_compare_unequal_segments(self):
         segment_one = Segment([200, 400, 400, 600])

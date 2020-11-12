@@ -2,7 +2,7 @@ import configparser
 import math
 from math import atan2
 
-from line_extractor.line import Line
+from alto_segment_lib.segment import Line
 
 
 class HoughBundler:
@@ -117,7 +117,7 @@ class HoughBundler:
 
         # return first and last point in sorted group
         # [[x,y],[x,y]]
-        return Line(points[0][0], points[0][1], points[-1][0], points[-1][1])
+        return Line([points[0][0], points[0][1], points[-1][0], points[-1][1]])
 
     def process_lines(self, lines):
         '''Main function for lines from cv.HoughLinesP() output merging

@@ -4,7 +4,7 @@ from math import atan2
 from os import environ
 import numpy as np
 from line_extractor.hough_bundler import HoughBundler
-from line_extractor.line import Line
+from alto_segment_lib.segment import Line
 
 environ["OPENCV_IO_ENABLE_JASPER"] = "true"
 import cv2

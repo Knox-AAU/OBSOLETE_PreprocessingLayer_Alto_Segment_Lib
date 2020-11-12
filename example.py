@@ -87,13 +87,13 @@ def run_file(file_path):
 
     text_lines = altoExtractor.extract_lines()
     text_lines = segment_helper.repair_text_lines(text_lines, lines)
-    lists = segment_helper.group_lines_into_paragraph_headers(text_lines)
+    lists = segment_helper.group_lines_into_paragraphs_headers(text_lines)
     #display_lines(lists[0], lists[1], "lines")
     segments = segment_helper.combine_lines_into_segments(lists[1])
     #display_segments(segments, "segments")
 
     paragraphs = [segment for segment in segments if segment.type == "paragraph"]
-    repair = RepairSegments(paragraphs, lines, 30)
+    repair = RepairSegments(paragraphs, 30)
     rep_rows_segments2 = repair.repair_rows()
     paragraphs.clear()
     segments_para = rep_rows_segments2

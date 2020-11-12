@@ -21,7 +21,7 @@ class SegmentHelper:
             width.append(line.width())
         return statistics.median(width)
 
-    def group_lines_into_paragraph_headers(self, lines):
+    def group_lines_into_paragraphs_headers(self, lines):
         paragraph = []
         header = []
         median = self.find_line_height_median(lines)
@@ -36,20 +36,18 @@ class SegmentHelper:
         return header, paragraph
 
     def combine_lines_into_segments(self, lines):
-        segment = []
-        column_groups = self.group_same_column(lines)
-        segment_groups = self.group_same_segment(column_groups)
+        segments = []
+        column_groups = self.__group_same_column(lines)
+        segment_groups = self.__group_same_segment(column_groups)
 
         for group in segment_groups:
             if len(group) > 0:
-                coords = self.make_box_around_lines(group)
-                new_segment = Segment(coords)
-                new_segment.lines = group
+                new_segment = self.make_box_around_lines(group)
                 new_segment.type = "paragraph"
-                segment.append(new_segment)
-        return segment
+                segments.append(new_segment)
+        return segments
 
-    def group_same_column(self, lines):
+    def __group_same_column(self, lines):
         previous_line = None
         temp = []
         column_groups = []
@@ -78,7 +76,7 @@ class SegmentHelper:
 
         return column_groups
 
-    def group_same_segment(self, column_groups):
+    def __group_same_segment(self, column_groups):
         temp = []
         segment_groups = []
 
@@ -120,7 +118,6 @@ class SegmentHelper:
         x2 = lines[0].x2
         y1 = lines[0].y1
         y2 = lines[0].y2
-        coordinates = []
 
         # Finds width and height line and change box height and width accordingly
         for line in lines:
@@ -140,46 +137,26 @@ class SegmentHelper:
             if line.y2 > y2:
                 y2 = line.y2
 
-        coordinates.append(x1)
-        coordinates.append(y1)
-        coordinates.append(x2)
-        coordinates.append(y2)
+        segment = Segment([x1, y1, x2, y2])
+        segment.lines = lines
 
-        return coordinates
+        return segment
 
     def repair_text_lines(self, text_lines, lines):
-        margin = 5
         for text_line in text_lines:
             if text_line.is_box_horizontal():
                 # Gets whether the text line is intersected and which lines intersect it
-                (does_line_intersect, intersecting_lines) = self.does_line_intersect_text_line(text_line, lines)
+                (does_line_intersect, intersecting_lines) = self.__does_line_intersect_text_line(text_line, lines)
                 if does_line_intersect:
                     for line in intersecting_lines:
-                        coords = [line.x1 + margin, text_line.y1, text_line.x2, text_line.y2]
-                        text_line.x2 = line.x1 - margin
+                        coords = [line.x1, text_line.y1, text_line.x2, text_line.y2]
+                        text_line.x2 = line.x1
 
                         text_lines.append(Line(coords))
 
-       # text_lines = self.repair_remaining_lines_with_median(text_lines)
         return text_lines
 
-    def repair_remaining_lines_with_median(self, lines):
-        margin = 5
-        new_lines = []
-
-        for line in lines:
-            if line.width() > self.__median_line_width:
-                coords = [self.__median_line_width + margin, line.y1, line.x2, line.y2]
-                line.x2 = self.__median_line_width - margin
-
-                new_lines.append(Line(coords))
-        newest_lines = []
-        if len(new_lines) != 0:
-            newest_lines = self.repair_remaining_lines_with_median(new_lines)
-
-        return [*new_lines, *newest_lines]
-
-    def does_line_intersect_text_line(self, text_line, lines: list):
+    def __does_line_intersect_text_line(self, text_line, lines: list):
         new_lines = []
         for line in lines:
             # Finds 5% of the width as a buffer to avoid false positives due to crooked lines
