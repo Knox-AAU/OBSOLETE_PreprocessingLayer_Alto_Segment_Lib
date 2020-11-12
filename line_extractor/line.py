@@ -10,10 +10,9 @@ class Line:
         self.length = math.sqrt(math.pow((x2 - x1), 2) + math.pow((y2 - y1), 2))
         self.orientation = self.get_orientation()
 
-
     @classmethod
     def from_array(cls, array):
-        return Line(array[0],array[1],array[2],array[3])
+        return Line(array[0], array[1], array[2], array[3])
 
     def get_orientation(self):
         '''get orientation of a line, using its length

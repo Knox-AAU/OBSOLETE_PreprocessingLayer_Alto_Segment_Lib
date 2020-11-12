@@ -1,6 +1,6 @@
 import statistics
 
-from alto_segment_lib.segment import Segment
+from alto_segment_lib.segment import Segment, Line
 
 
 class SegmentHelper:
@@ -151,16 +151,16 @@ class SegmentHelper:
         margin = 5
         for text_line in text_lines:
             if text_line.is_box_horizontal():
-                (does_line_intersect, lines) = self.does_line_intersect_text_line(text_line, lines)
+                # Gets whether the text line is intersected and which lines intersect it
+                (does_line_intersect, intersecting_lines) = self.does_line_intersect_text_line(text_line, lines)
                 if does_line_intersect:
-                    for line in lines:
+                    for line in intersecting_lines:
                         coords = [line.x1 + margin, text_line.y1, text_line.x2, text_line.y2]
                         text_line.x2 = line.x1 - margin
 
                         text_lines.append(Line(coords))
 
        # text_lines = self.repair_remaining_lines_with_median(text_lines)
-
         return text_lines
 
     def repair_remaining_lines_with_median(self, lines):
@@ -182,12 +182,13 @@ class SegmentHelper:
     def does_line_intersect_text_line(self, text_line, lines: list):
         new_lines = []
         for line in lines:
-            # finds 5% of the width and height as a buffer
+            # Finds 5% of the width as a buffer to avoid false positives due to crooked lines
             width_5_percent = (text_line.x2 - text_line.x1) * 0.05
-            # checks if a line is going through one of the lines of the text_line
-            # width/height is a buffer so we dont get false positives due to crooked lines
+
             if not line.is_horizontal():
+                # Checks if the line vertically intersects the text line
                 if text_line.x1 + width_5_percent < line.x1 < text_line.x2 - width_5_percent:
+                    # Checks if the line horizontally intersects the text line
                     if line.y1 < text_line.y1 < line.y2 or line.y1 < text_line.y2 < line.y2:
                         new_lines.append(line)
 

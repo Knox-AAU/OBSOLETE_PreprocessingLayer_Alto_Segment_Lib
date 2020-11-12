@@ -37,7 +37,7 @@ class LineExtractor:
         lines = self.extract_lines_via_image(image)
         #corrected_lines = self.correct_lines(lines)
         extended_lines = self.extend_lines_vertically(lines, image)     # Idk hvad den gør, den gør ihvertfald linjerne skæve
-        #self.show_lines_on_image(image, extended_lines)
+        self.show_lines_on_image(image, extended_lines)
         final_lines = self.remove_outline_lines(extended_lines, image)
         return final_lines
 
@@ -129,11 +129,11 @@ class LineExtractor:
 
         lines_edges = cv2.addWeighted(image_in_color, 0.5, line_image, 1, 0)
 
-        #cv2.imwrite(r"/home/jakob/Desktop/2015-01-01-01/lines.png", lines_edges)
+        cv2.imwrite("1919-streger.png", lines_edges)
         #print("done")
-        cv2.namedWindow("image", cv2.WINDOW_NORMAL)
-        cv2.imshow("image", lines_edges)
-        cv2.waitKey(0)
+        # cv2.namedWindow("image", cv2.WINDOW_NORMAL)
+        # cv2.imshow("image", lines_edges)
+        # cv2.waitKey(0)
 
     def extend_lines_vertically(self, lines, image):
         horizontal_size, vertical_size = image.shape

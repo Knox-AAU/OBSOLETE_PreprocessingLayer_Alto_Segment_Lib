@@ -69,20 +69,20 @@ class RepairSegments:
         return_segments = self.__segments.copy()
         segment_helper = SegmentHelper()
         thresh_within = 5
-        thresh_close_to = 20
 
         # Iterates through all segments and all other segments
         for segment in self.__segments:
             for subsegment in self.__segments:
                 if not segment.compare(subsegment):
-                    # Checks if both y and x-coordinates for the subsegment is within the segment
+                    thresh_close_to = subsegment.width() * 0.05
+                    # Checks if the subsegment is entirely within the segment
                     if segment.between_y_coords(subsegment.y1 + thresh_within) \
                             and segment.between_y_coords(subsegment.y2 - thresh_within) \
                             and segment.between_x_coords(subsegment.x1 + thresh_within) \
                             and segment.between_x_coords(subsegment.x2 - thresh_within) \
                             and subsegment in return_segments:
                         return_segments.remove(subsegment)
-                    # Checks if subsegment is vertically close to segment
+                    # Checks if subsegment's x-coords are close to segment
                     elif (segment.between_x_coords(subsegment.x1 + thresh_close_to)
                             or segment.between_x_coords(subsegment.x2 - thresh_close_to)) \
                             and subsegment in return_segments:
