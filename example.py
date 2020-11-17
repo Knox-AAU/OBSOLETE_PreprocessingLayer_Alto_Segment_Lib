@@ -1,42 +1,107 @@
 import argparse
+import os
 
+import line_extractor
 from alto_segment_lib.repair_segments import RepairSegments
 from alto_segment_lib.alto_segment_extractor import AltoSegmentExtractor
-from alto_segment_lib.segmenter import Segmenter, FindType
-from alto_segment_lib.segment_ordering import SegmentOrdering
 import matplotlib.pyplot as plt
+
+from alto_segment_lib.segment_helper import SegmentHelper
+from alto_segment_lib.segment_ordering import SegmentOrdering
 from matplotlib.patches import Rectangle
 from PIL import Image
+from matplotlib.patches import ConnectionPatch
+
+from line_extractor.extractor import LineExtractor
 
 base_path: str
 filename: str
 filepath: str
 filetype = ".jp2"
-# /Users/Alexi/Desktop/KnoxFiler/4/ aalborgstiftstidende-1942-01-02-01-0028B
 
 
-def display_segments(segments_for_display):
-    #plt.imshow(Image.open("/home/tlorentzen/Desktop/Example/1942/aalborgstiftstidende-1942-01-02-01-0028B.tiff"))
-    plt.imshow(Image.open(filepath+filetype))
+def display_segments(segments_for_display, file_path, name):
+    plt.imshow(Image.open(file_path + filetype))
     plt.rcParams.update({'font.size': 3, 'text.color': "red", 'axes.labelcolor': "red"})
 
     counter = 1
 
     # Add the patch to the Axes
-    #plt.hlines(100, 100, 100+repair.get_median_column_width(), colors='k', linestyles='solid', label='Median paragraph width')
+    # plt.hlines(100, 100, 100+repair.get_median_column_width(), colors='k', linestyles='solid', label='Median paragraph width')
 
     for segment in segments_for_display:
-        plt.gca().add_patch(Rectangle((segment.x1, segment.y1), (segment.x2 - segment.x1), (segment.y2 - segment.y1), linewidth=0.3, edgecolor='r', facecolor='none'))
+        plt.gca().add_patch(
+            Rectangle((segment.x1, segment.y1), (segment.x2 - segment.x1), (segment.y2 - segment.y1), linewidth=0.3,
+                      edgecolor='r', facecolor='none'))
         # plt.text(segment.x1+25, segment.y1+30, "["+str(counter)+"]", horizontalalignment='left', verticalalignment='top')
         # plt.text(seg[0]+45, seg[1] + 200, str((seg[2]-seg[0])), horizontalalignment='left', verticalalignment='top')
         counter += 1
 
-    plt.savefig(filepath+"-out4.png", dpi=300, bbox_inches='tight')
+    plt.savefig(file_path + "-" + name + ".png", dpi=600, bbox_inches='tight')
+    plt.gca().clear()
+
+
+def display_lines(headers_for_display, paragraphs_for_display, file_path, name):
+    plt.imshow(Image.open(file_path + filetype))
+    plt.rcParams.update({'font.size': 3, 'text.color': "red", 'axes.labelcolor': "red"})
+
+    counter = 1
+
+    for segment in headers_for_display:
+        plt.gca().add_patch(
+            Rectangle((segment.x1, segment.y1), (segment.x2 - segment.x1), (segment.y2 - segment.y1), linewidth=0.3,
+                      edgecolor='b', facecolor='none'))
+        counter += 1
+
+    for segment in paragraphs_for_display:
+        plt.gca().add_patch(
+            Rectangle((segment.x1, segment.y1), (segment.x2 - segment.x1), (segment.y2 - segment.y1), linewidth=0.3,
+                      edgecolor='r', facecolor='none'))
+        counter += 1
+
+    plt.savefig(file_path + "-" + name + ".png", dpi=600, bbox_inches='tight')
+    plt.gca().clear()
+
+
+def run_multiple_files(basepath):
+    for file_name in os.listdir(basepath):
+        file_path = os.path.join(basepath, file_name)
+
+        if not os.path.isfile(file_path) or not file_path.endswith(".jp2"):
+            continue
+        file_path = file_path.split(".jp2")[0]
+        print(file_path)
+
+        run_file(file_path)
+
+
+def run_file(file_path):
+    lines = LineExtractor().extract_lines_via_path(file_path + ".jp2")
+    #display_lines([], lines, file_path, "streger")
+
+    altoExtractor = AltoSegmentExtractor(file_path + ".alto.xml")
+    altoExtractor.set_dpi(300)
+    altoExtractor.set_margin(0)
+
+    segment_helper = SegmentHelper()
+
+    text_lines = altoExtractor.extract_lines()
+    text_lines = segment_helper.repair_text_lines(text_lines, lines)
+    lists = segment_helper.group_lines_into_paragraphs_headers(text_lines)
+    #display_lines(lists[0], lists[1], "lines", file_path)
+    segments = segment_helper.combine_lines_into_segments(lists[1])
+    #display_segments(segments, file_path, "segments")
+
+    paragraphs = [segment for segment in segments if segment.type == "paragraph"]
+    repair = RepairSegments(paragraphs, 30)
+    rep_rows_segments2 = repair.repair_rows()
+    paragraphs.clear()
+    segments_para = rep_rows_segments2
+    display_segments(segments_para, file_path, "repaired")
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    # defines input and output path
     parser.add_argument('path', help='The path to the image folder')
     parser.add_argument('filename', help='The name of the file without filetype')
 
@@ -46,28 +111,5 @@ if __name__ == '__main__':
     filename = args.filename
     filepath = base_path + filename
 
-    segmenter = AltoSegmentExtractor(filepath + ".alto.xml")
-    segmenter.set_dpi(300)
-    segmenter.set_margin(0)
-    #
-    segments = segmenter.extract_segments()
-
-    # print("Repair segments")
-
-    paragraphs = [segment for segment in segments if segment.type == "paragraph"]
-    repair = RepairSegments(paragraphs, 30)
-    rep_rows_segments1 = repair.repair_columns()
-    rep_rows_segments2 = repair.repair_rows()
-    paragraphs.clear()
-    segments_para = rep_rows_segments2
-
-    # for seg in paragraphs:
-    #    print('x:{0} y:{1} x1:{2} y2:{3} - {4}'.format(str(seg.x1), str(seg.y1), str(seg.x2), str(seg.y2), seg.type))
-
-    # segments = segmenter.extract_segments()
-    # segments_para = [segment for segment in segments if segment.type == "paragraph"]
-    segments_headers = [segment for segment in segments if segment.type == "headline"]
-
-    segment_order = SegmentOrdering(base_path, filename)
-    segments_in_articles = segment_order.distribute_segments_into_articles(segments_headers, segments_para)
-    display_segments(segments_para)
+    run_multiple_files(base_path)
+    # run_file(filepath)

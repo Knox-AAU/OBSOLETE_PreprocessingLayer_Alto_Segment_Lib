@@ -1,3 +1,5 @@
+import math
+
 
 class Segment:
     type: str
@@ -7,7 +9,7 @@ class Segment:
     y2: int
     lines: list
 
-    def __init__(self, coord: list = None, seg_type: str = ""):
+    def __init__(self, coord: list = None, seg_type: str = "unknown"):
         self.lines = []
 
         if coord is None:
@@ -29,16 +31,6 @@ class Segment:
 
     def between_x_coords(self, coord: int, margin: float = 0.0):
         return (self.x1 * (1 - margin)) <= coord <= (self.x2 * (1 + margin))
-
-    # def __init__(self, type_, top_x, top_y, bot_x, bot_y):
-    #     self.type = type_
-    #     self.x1 = top_x
-    #     self.y1 = top_y
-    #     self.x2 = bot_x
-    #     self.y2 = bot_y
-    #
-    # def __init__(self):
-    #     pass
 
     def between_y_coords(self, coord: int, margin: int = 0):
         return (self.y1 * (1 - margin)) <= coord <= (self.y2 * (1 + margin))
@@ -65,6 +57,8 @@ class Line:
             self.y1 = coord[1]
             self.x2 = coord[2]
             self.y2 = coord[3]
+            self.length = math.sqrt(math.pow((self.x2 - self.x1), 2) + math.pow((self.y2 - self.y1), 2))
+            self.orientation = self.get_orientation()
 
     def width(self):
         return self.x2 - self.x1
@@ -72,8 +66,36 @@ class Line:
     def height(self):
         return self.y2 - self.y1
 
-    # def __init__(self, x: int, y: int, x2: int, y2: int):
-    #     self.x1 = x
-    #     self.y1 = y
-    #     self.x2 = x2
-    #     self.y2 = y2
+    def is_box_horizontal(self):
+        if (self.x2 - self.x1) > (self.y2 - self.y1):
+            return True
+
+    @classmethod
+    def from_array(cls, array):
+        return Line([array[0], array[1], array[2], array[3]])
+
+    def get_orientation(self):
+        '''get orientation of a line, using its length
+        https://en.wikipedia.org/wiki/Atan2
+        '''
+        orientation = math.atan2(abs((self.x1 - self.x2)), abs((self.y1 - self.y2)))
+        return math.degrees(orientation)
+
+    def __eq__(self, other):
+        return self.x1 == other.x1 and self.y1 == other.y1 and self.x2 == other.x2 and self.y2 == other.y2
+
+    def is_horizontal(self):
+        orientation = self.get_orientation()
+        # if horizontal
+        if 45 < orientation < 135:
+            return True
+
+    def is_horizontal_or_vertical(self):
+        orientation = self.get_orientation()
+        # if horizontal
+        if 85 <= orientation <= 95:
+            return True
+        elif 0 <= orientation <= 20:
+            return True
+
+        return False

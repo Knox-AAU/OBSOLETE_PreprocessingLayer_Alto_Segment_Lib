@@ -4,7 +4,7 @@ from math import atan2
 from os import environ
 import numpy as np
 from line_extractor.hough_bundler import HoughBundler
-from line_extractor.line import Line
+from alto_segment_lib.segment import Line
 
 environ["OPENCV_IO_ENABLE_JASPER"] = "true"
 import cv2
@@ -32,14 +32,38 @@ class LineExtractor:
 
     def extract_lines_via_path(self, image_path):
         image = cv2.imread(image_path, cv2.CV_8UC1)
+
+
         lines = self.extract_lines_via_image(image)
-        extended_lines = self.extend_lines_vertically(lines, image)
-        #self.show_lines_on_image(image, lines)
-        return extended_lines
+        #corrected_lines = self.correct_lines(lines)
+        extended_lines = self.extend_lines_vertically(lines, image)     # Idk hvad den gør, den gør ihvertfald linjerne skæve
+        self.show_lines_on_image(image, extended_lines)
+        final_lines = self.remove_outline_lines(extended_lines, image)
+        return final_lines
 
     def extract_lines_via_image(self, image):
         enhanced_image = self.enhance_lines(image)
         return self.get_lines_from_binary_image(enhanced_image)
+
+    def remove_outline_lines(self, lines, image):
+        outline_stop = 100
+        max_x, max_y = image.shape
+        lines_to_remove = []
+
+        for line in lines:
+            if 0 < line.x1 < outline_stop and 0 < line.x2 < outline_stop or max_x - outline_stop < line.x1 < max_x and max_x - outline_stop < line.x2 < max_x:
+                lines_to_remove.append(line)
+                # lines.remove(line)
+            elif 0 < line.y1 < outline_stop and 0 < line.y2 < outline_stop or max_y - outline_stop < line.y1 < max_y and max_y - outline_stop < line.y2 < max_y:
+                lines_to_remove.append(line)
+                # lines.remove(line)
+
+        lines_to_remove.reverse()
+
+        for line in lines_to_remove:
+            lines.remove(line)
+
+        return lines
 
     def enhance_lines(self, image):
 
@@ -105,16 +129,50 @@ class LineExtractor:
 
         lines_edges = cv2.addWeighted(image_in_color, 0.5, line_image, 1, 0)
 
-        cv2.namedWindow("image", cv2.WINDOW_NORMAL)
-        cv2.imshow("image", lines_edges)
-        cv2.waitKey(0)
+        #cv2.imwrite("1919-streger.png", lines_edges)
+        #print("done")
+        # cv2.namedWindow("image", cv2.WINDOW_NORMAL)
+        # cv2.imshow("image", lines_edges)
+        # cv2.waitKey(0)
 
     def extend_lines_vertically(self, lines, image):
         horizontal_size, vertical_size = image.shape
 
         for line in lines:
-            if line.y2 > vertical_size - 200:
-                line.y2 = line.y2 + 200
+            if not line.is_horizontal():
+                if line.y2 > vertical_size - 200:
+                    line.y2 = line.y2 + 150
 
         return lines
+
+    def correct_lines(self, lines):
+
+        new_lines = []
+
+        for line in lines:
+            if not line.is_horizontal_or_vertical():
+                continue
+
+            if not line.is_horizontal():
+                if line.x1 < line.x2:
+                    temp = line.x1
+                    line.x1 = line.x2
+                    line.x2 = temp
+
+                median = int((line.x1 - line.x2)/2)
+                line.x1 -= median
+                line.x2 += median
+            else:
+                if line.y1 < line.y2:
+                    temp = line.y1
+                    line.y1 = line.y2
+                    line.y2 = temp
+
+                median = int((line.y1 - line.y2)/2)
+                line.y1 -= median
+                line.y2 += median
+
+            new_lines.append(line)
+
+        return new_lines
 

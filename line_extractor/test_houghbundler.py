@@ -1,4 +1,4 @@
-from line_extractor.line import Line
+from alto_segment_lib.segment import Line
 from line_extractor.hough_bundler import HoughBundler
 
 

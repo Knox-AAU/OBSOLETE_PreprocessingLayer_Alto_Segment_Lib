@@ -1,5 +1,5 @@
 from line_extractor.extractor import LineExtractor
-from line_extractor.line import Line
+from alto_segment_lib.segment import Line
 
 
 def test_filter_by_angle_diversion_from_horizontal_and_vertical():
